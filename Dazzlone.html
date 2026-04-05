@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Dazzlone AI — by Znill</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #080808;
+            --surface: #111;
+            --surface2: #181818;
+            --surface3: #222;
+            --border: rgba(255, 255, 255, 0.07);
+            --border-light: rgba(255, 255, 255, 0.13);
+            --text: #ebebeb;
+            --text-dim: #888;
+            --text-dimmer: #4a4a4a;
+            --scrollbar: #2a2a2a;
+            --input-bg: #0d0d0d;
+        }
+
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+            background-size: 180px;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.7;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.022) 0%, transparent 65%);
+            top: -250px;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100dvh;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 13px 16px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(8, 8, 8, 0.93);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            z-index: 10;
+            animation: slideDown 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-18px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .logo-wrap {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            position: relative;
+            flex-shrink: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #111;
+        }
+
+        .logo-wrap::before {
+            content: '';
+            position: absolute;
+            width: 180%;
+            height: 180%;
+            background: conic-gradient(from 0deg, transparent 0%, #fff 25%, transparent 50%, #fff 75%, transparent 100%);
+            animation: spin 4s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .logo-wrap img {
+            position: relative;
+            z-index: 1;
+            width: calc(100% - 3.5px);
+            height: calc(100% - 3.5px);
+            object-fit: cover;
+            border-radius: 9px;
+            background: #080808;
+            display: block;
+        }
+
+        .header-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-name {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.02em;
+            color: var(--text);
+        }
+
+        .header-sub {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 10.5px;
+            color: var(--text-dimmer);
+            font-weight: 300;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: blink 2.2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.25
+            }
+        }
+
+        .header-right {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .mode-pills {
+            display: flex;
+            gap: 3px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 3px;
+        }
+
+        .mode-pill {
+            padding: 4px 10px;
+            border-radius: 7px;
+            font-size: 10.5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dimmer);
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .mode-pill.active {
+            background: var(--surface3);
+            color: var(--text);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .mode-pill:hover:not(.active) {
+            color: var(--text-dim);
+        }
+
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dim);
+            flex-shrink: 0;
+        }
+
+        .icon-btn:hover {
+            background: var(--surface2);
+            border-color: var(--border-light);
+            color: var(--text);
+            transform: scale(1.06);
+        }
+
+        .icon-btn svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        /* MESSAGES */
+        .messages-wrap {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            scroll-behavior: smooth;
+        }
+
+        .messages-wrap::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .messages-wrap::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .messages-wrap::-webkit-scrollbar-thumb {
+            background: var(--scrollbar);
+            border-radius: 3px;
+        }
+
+        /* WELCOME */
+        .welcome {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            text-align: center;
+            padding: 30px 20px;
+            gap: 13px;
+            animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .welcome-logo {
+            width: 72px;
+            height: 72px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 0 1px var(--border-light), 0 0 40px rgba(255, 255, 255, 0.06);
+            margin-bottom: 4px;
+        }
+
+        .welcome-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .welcome h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(20px, 5vw, 26px);
+            font-weight: 700;
+            background: linear-gradient(170deg, #fff 30%, #666 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.25;
+        }
+
+        .welcome p {
+            font-size: 13px;
+            color: var(--text-dimmer);
+            max-width: 270px;
+            line-height: 1.65;
+            font-weight: 300;
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            justify-content: center;
+            margin-top: 4px;
+        }
+
+        .chip {
+            padding: 7px 12px;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            font-size: 11.5px;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .chip:hover {
+            border-color: var(--border-light);
+            background: var(--surface2);
+            color: var(--text);
+            transform: translateY(-1px);
+        }
+
+        /* MSG GROUPS */
+        .msg-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            animation: msgIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes msgIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .msg-group.user {
+            align-items: flex-end;
+        }
+
+        .msg-group.bot {
+            align-items: flex-start;
+        }
+
+        .msg-label {
+            font-size: 10px;
+            color: var(--text-dimmer);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            font-weight: 500;
+            padding: 0 4px;
+            margin-bottom: 1px;
+        }
+
+        .bubble {
+            max-width: min(88%, 600px);
+            padding: 11px 15px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.7;
+            word-break: break-word;
+            position: relative;
+        }
+
+        .msg-group.user .bubble {
+            background: linear-gradient(145deg, #1f1f1f, #161616);
+            border: 1px solid var(--border-light);
+            border-bottom-right-radius: 4px;
+            color: var(--text);
+        }
+
+        .msg-group.bot .bubble {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 4px;
+            color: var(--text);
+            max-width: min(96%, 680px);
+        }
+
+        /* THINKING BOX */
+        .think-box {
+            background: #0e180e;
+            border: 1px solid rgba(74, 222, 128, 0.18);
+            border-radius: 10px;
+            padding: 10px 13px;
+            margin-bottom: 10px;
+        }
+
+        .think-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(74, 222, 128, 0.45);
+            margin-bottom: 6px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .think-chevron {
+            margin-left: auto;
+            transition: transform 0.2s;
+            width: 13px;
+            height: 13px;
+        }
+
+        .think-header.collapsed .think-chevron {
+            transform: rotate(-90deg);
+        }
+
+        .think-content {
+            font-size: 12.5px;
+            color: rgba(74, 222, 128, 0.65);
+            line-height: 1.65;
+            font-style: italic;
+            overflow: hidden;
+            max-height: 600px;
+            transition: max-height 0.3s ease;
+            white-space: pre-wrap;
+        }
+
+        .think-content.collapsed {
+            max-height: 0;
+        }
+
+        /* SEARCH BOX */
+        .search-box {
+            background: rgba(56, 189, 248, 0.05);
+            border: 1px solid rgba(56, 189, 248, 0.16);
+            border-radius: 10px;
+            padding: 9px 13px;
+            margin-bottom: 10px;
+        }
+
+        .search-header {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: rgba(56, 189, 248, 0.55);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 5px;
+        }
+
+        .search-header svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .search-query {
+            font-size: 12.5px;
+            color: rgba(56, 189, 248, 0.75);
+            font-style: italic;
+        }
+
+        /* MARKDOWN */
+        .bot-md h1,
+        .bot-md h2,
+        .bot-md h3,
+        .bot-md h4 {
+            font-family: 'Syne', sans-serif;
+            color: #fff;
+            line-height: 1.3;
+            margin: 14px 0 6px;
+        }
+
+        .bot-md h1 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .bot-md h2 {
+            font-size: 16px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 5px;
+        }
+
+        .bot-md h3 {
+            font-size: 14.5px;
+            font-weight: 600;
+        }
+
+        .bot-md h4 {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text-dim);
+        }
+
+        .bot-md p {
+            margin: 5px 0;
+        }
+
+        .bot-md ul,
+        .bot-md ol {
+            padding-left: 20px;
+            margin: 7px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .bot-md li {
+            line-height: 1.65;
+        }
+
+        .bot-md li::marker {
+            color: var(--text-dim);
+        }
+
+        .bot-md strong {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .bot-md em {
+            color: #c4b5fd;
+        }
+
+        .bot-md a {
+            color: #60a5fa;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .bot-md blockquote {
+            border-left: 3px solid var(--border-light);
+            padding: 6px 13px;
+            margin: 8px 0;
+            color: var(--text-dim);
+            font-style: italic;
+            background: var(--surface2);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .bot-md hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 12px 0;
+        }
+
+        .bot-md table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 13px;
+        }
+
+        .bot-md th {
+            background: var(--surface3);
+            color: #fff;
+            font-weight: 600;
+            padding: 7px 11px;
+            text-align: left;
+            border: 1px solid var(--border-light);
+        }
+
+        .bot-md td {
+            padding: 7px 11px;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .bot-md tr:nth-child(even) td {
+            background: var(--surface2);
+        }
+
+        .bot-md code:not(.hljs) {
+            background: #1a1a1a;
+            color: #f472b6;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 2px 6px;
+            border-radius: 5px;
+            font-size: 12.5px;
+            border: 1px solid var(--border);
+        }
+
+        /* CODE BLOCKS */
+        .code-wrapper {
+            position: relative;
+            margin: 10px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .code-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #161b22;
+            padding: 7px 13px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .code-lang {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: #8b949e;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+        }
+
+        .copy-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #8b949e;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #c9d1d9;
+        }
+
+        .copy-btn.copied {
+            background: rgba(74, 222, 128, 0.12);
+            border-color: rgba(74, 222, 128, 0.25);
+            color: #4ade80;
+        }
+
+        .copy-btn svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .code-wrapper pre {
+            margin: 0;
+            background: #0d1117 !important;
+            padding: 15px 17px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+            line-height: 1.65;
+        }
+
+        .code-wrapper pre code {
+            background: transparent !important;
+            padding: 0 !important;
+            border: none !important;
+            color: inherit !important;
+        }
+
+        .code-wrapper pre::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .code-wrapper pre::-webkit-scrollbar-thumb {
+            background: #2a2a2a;
+            border-radius: 4px;
+        }
+
+        /* TYPING */
+        .typing-bubble {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 14px 17px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-dimmer);
+            animation: bounce 1.35s ease-in-out infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.18s
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.36s
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.35
+            }
+
+            40% {
+                transform: translateY(-7px);
+                opacity: 1
+            }
+        }
+
+        .streaming-cursor::after {
+            content: '▋';
+            display: inline-block;
+            animation: cur 0.55s step-end infinite;
+            color: var(--text-dimmer);
+            font-size: 12px;
+            margin-left: 1px;
+        }
+
+        @keyframes cur {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0
+            }
+        }
+
+        .date-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 14px 0 6px;
+        }
+
+        .date-divider::before,
+        .date-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .date-divider span {
+            font-size: 9.5px;
+            color: var(--text-dimmer);
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            white-space: nowrap;
+        }
+
+        /* INPUT */
+        .input-area {
+            padding: 10px 14px 18px;
+            background: rgba(8, 8, 8, 0.96);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border-top: 1px solid var(--border);
+            z-index: 10;
+            animation: slideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .mode-bar {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            margin-bottom: 7px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .mode-bar.show {
+            display: flex;
+        }
+
+        .mode-bar svg {
+            width: 12px;
+            height: 12px;
+            flex-shrink: 0;
+        }
+
+        .mode-badge {
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .mode-badge.deep {
+            background: rgba(167, 139, 250, 0.14);
+            color: #a78bfa;
+            border: 1px solid rgba(167, 139, 250, 0.22);
+        }
+
+        .mode-badge.search {
+            background: rgba(56, 189, 248, 0.1);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 9px 12px;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+
+        .input-row:focus-within {
+            border-color: rgba(255, 255, 255, 0.18);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.032);
+        }
+
+        .input-row textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            resize: none;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 1.55;
+            min-height: 22px;
+            max-height: 160px;
+            overflow-y: auto;
+            caret-color: #fff;
+        }
+
+        .input-row textarea::placeholder {
+            color: var(--text-dimmer);
+        }
+
+        .input-row textarea::-webkit-scrollbar {
+            width: 0;
+        }
+
+        .send-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: #fff;
+            border: none;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+            background: #e5e5e5;
+        }
+
+        .send-btn:active {
+            transform: scale(0.93);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .send-btn svg {
+            width: 15px;
+            height: 15px;
+            color: #000;
+        }
+
+        .input-footer {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 10px;
+            color: var(--text-dimmer);
+        }
+
+        .scroll-btn {
+            position: absolute;
+            bottom: 88px;
+            right: 16px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--surface2);
+            border: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.25s;
+            z-index: 20;
+            color: var(--text-dim);
+        }
+
+        .scroll-btn.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scroll-btn:hover {
+            background: var(--surface3);
+            color: var(--text);
+        }
+
+        .scroll-btn svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%) translateY(8px);
+            background: var(--surface2);
+            border: 1px solid var(--border-light);
+            border-radius: 9px;
+            padding: 9px 16px;
+            font-size: 12.5px;
+            color: var(--text);
+            opacity: 0;
+            transition: all 0.28s;
+            pointer-events: none;
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (min-width:640px) {
+            .app {
+                border-left: 1px solid var(--border);
+                border-right: 1px solid var(--border);
+            }
+        }
+
+        @supports (padding-bottom:env(safe-area-inset-bottom)) {
+            .input-area {
+                padding-bottom: max(18px, env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-left">
+                <div class="logo-wrap">
+                    <img src="Dazzlone.png" alt="Dazzlone" />
+                </div>
+                <div class="header-info">
+                    <div class="header-name">Dazzlone</div>
+                    <div class="header-sub">
+                        <div class="status-dot"></div><span>by Znill · always on</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="mode-pills">
+                    <div class="mode-pill active" id="pill-normal" onclick="setMode('normal')">Normal</div>
+                    <div class="mode-pill" id="pill-deep" onclick="setMode('deep')">🧠 Deep</div>
+                    <div class="mode-pill" id="pill-search" onclick="setMode('search')">🔍 Search</div>
+                </div>
+                <div class="icon-btn" onclick="clearChat()" title="New Chat">
+                    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path d="M12 5v14M5 12h14" stroke-linecap="round" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- MESSAGES -->
+        <div class="messages-wrap" id="messages">
+            <div class="welcome" id="welcome">
+                <div class="welcome-logo">
+                    <img src="Dazzlone.png" alt="Dazzlone" />
+                </div>
+                <h2>Hi, I'm Dazzlone<br>How can I help?</h2>
+                <p>Use 🧠 Deep for step-by-step reasoning, or 🔍 Search for web research.</p>
+                <div class="chips">
+                    <div class="chip" onclick="quickSend('Explain quantum computing simply')">⚛️ Quantum computing</div>
+                    <div class="chip" onclick="quickSend('Write a Python web scraper with detailed comments')">🐍 Python
+                        script</div>
+                    <div class="chip" onclick="quickSend('Give me 5 startup ideas for 2025 with detailed analysis')">💡
+                        Startup ideas</div>
+                    <div class="chip" onclick="quickSend('What are the latest AI breakthroughs?')">🔍 AI news</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scroll-btn" id="scrollBtn" onclick="scrollToBottom()">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </div>
+
+        <!-- INPUT -->
+        <div class="input-area">
+            <div class="mode-bar" id="modeBar">
+                <svg id="modeBarIcon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" />
+                </svg>
+                <span id="modeBarText">Mode active</span>
+                <span class="mode-badge" id="modeBarBadge">Normal</span>
+            </div>
+            <div class="input-row">
+                <textarea id="input" placeholder="Message Dazzlone..." rows="1" onkeydown="handleKey(event)"
+                    oninput="autoResize(this)"></textarea>
+                <button class="send-btn" id="sendBtn" onclick="send()">
+                    <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path d="M12 19V5M5 12l7-7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+            <div class="input-footer">Dazzlone may make mistakes · Always verify important info</div>
+        </div>
+    </div>
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API_KEY = "sk_1icxn6w9_lIPGJWDoN59NECDJ9UJT6Kma";
+        const API_URL = "https://api.sarvam.ai/v1/chat/completions";
+        const LOGO = "Dazzlone.png";
+
+        let history = [], isTyping = false, firstMsg = true, mode = 'normal';
+        const msgsEl = document.getElementById('messages');
+        const inputEl = document.getElementById('input');
+        const sendBtn = document.getElementById('sendBtn');
+        const scrollBtn = document.getElementById('scrollBtn');
+
+        /* ── MARKED CONFIG ── */
+        const renderer = new marked.Renderer();
+        renderer.code = function (code, lang) {
+            const language = (lang || 'plaintext').toLowerCase();
+            let highlighted;
+            try { highlighted = hljs.highlight(code, { language, ignoreIllegals: true }).value; }
+            catch { highlighted = hljs.highlightAuto(code).value; }
+            const id = 'cb_' + Math.random().toString(36).slice(2, 9);
+            return `<div class="code-wrapper">
+    <div class="code-topbar">
+      <span class="code-lang">${language}</span>
+      <button class="copy-btn" onclick="copyCode('${id}',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+    </div>
+    <pre><code id="${id}" class="hljs">${highlighted}</code></pre>
+  </div>`;
+        };
+        marked.use({ renderer, breaks: true, gfm: true });
+
+        function copyCode(id, btn) {
+            const el = document.getElementById(id);
+            navigator.clipboard.writeText(el.innerText).then(() => {
+                btn.classList.add('copied');
+                btn.innerHTML = `<svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Copied!`;
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy`;
+                }, 2000);
+            });
+        }
+
+        /* ── MODE ── */
+        function setMode(m) {
+            mode = m;
+            document.querySelectorAll('.mode-pill').forEach(p => p.classList.remove('active'));
+            document.getElementById('pill-' + m).classList.add('active');
+            const bar = document.getElementById('modeBar');
+            const badge = document.getElementById('modeBarBadge');
+            const txt = document.getElementById('modeBarText');
+            const ico = document.getElementById('modeBarIcon');
+            if (m === 'normal') { bar.classList.remove('show'); return; }
+            bar.classList.add('show');
+            if (m === 'deep') {
+                badge.className = 'mode-badge deep'; badge.textContent = 'Deep Think';
+                txt.textContent = 'Advanced step-by-step reasoning ·';
+                ico.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>';
+            } else {
+                badge.className = 'mode-badge search'; badge.textContent = 'Web Search';
+                txt.textContent = 'Researching from web sources ·';
+                ico.innerHTML = '<circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/>';
+            }
+        }
+
+        /* ── UTILS ── */
+        function scrollToBottom(smooth = true) { msgsEl.scrollTo({ top: msgsEl.scrollHeight, behavior: smooth ? 'smooth' : 'instant' }); }
+        msgsEl.addEventListener('scroll', () => { scrollBtn.classList.toggle('visible', msgsEl.scrollHeight - msgsEl.clientHeight - msgsEl.scrollTop > 80); });
+        function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 160) + 'px'; }
+        function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }
+        function quickSend(t) { inputEl.value = t; autoResize(inputEl); send(); }
+        function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
+        function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+        /* ── WELCOME ── */
+        function welcomeHTML() {
+            return `<div class="welcome" id="welcome">
+    <div class="welcome-logo"><img src="${LOGO}" alt="Dazzlone"/></div>
+    <h2>Hi, I'm Dazzlone<br>How can I help?</h2>
+    <p>Use 🧠 Deep for step-by-step reasoning, or 🔍 Search for web research.</p>
+    <div class="chips">
+      <div class="chip" onclick="quickSend('Explain quantum computing simply')">⚛️ Quantum computing</div>
+      <div class="chip" onclick="quickSend('Write a Python web scraper with detailed comments')">🐍 Python script</div>
+      <div class="chip" onclick="quickSend('Give me 5 startup ideas for 2025 with detailed analysis')">💡 Startup ideas</div>
+      <div class="chip" onclick="quickSend('What are the latest AI breakthroughs?')">🔍 AI news</div>
+    </div>
+  </div>`;
+        }
+
+        function clearChat() { history = []; firstMsg = true; msgsEl.innerHTML = welcomeHTML(); showToast('New chat started'); }
+
+        function maybeDate() {
+            if (!firstMsg) return;
+            const d = document.createElement('div'); d.className = 'date-divider';
+            d.innerHTML = `<span>${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</span>`;
+            msgsEl.appendChild(d); firstMsg = false;
+        }
+
+        /* ── ADD USER ── */
+        function addUser(text) {
+            const w = document.getElementById('welcome'); if (w) w.remove();
+            maybeDate();
+            const g = document.createElement('div'); g.className = 'msg-group user';
+            g.innerHTML = `<div class="msg-label">You</div><div class="bubble">${esc(text)}</div>`;
+            msgsEl.appendChild(g); scrollToBottom();
+        }
+
+        /* ── TYPING ── */
+        function addTyping() {
+            const w = document.getElementById('welcome'); if (w) w.remove();
+            const g = document.createElement('div'); g.className = 'msg-group bot'; g.id = 'tg';
+            g.innerHTML = `<div class="msg-label">Dazzlone</div>
+    <div class="bubble typing-bubble"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+            msgsEl.appendChild(g); scrollToBottom(); return g;
+        }
+
+        /* ── BOT BUBBLE ── */
+        function addBotBubble() {
+            maybeDate();
+            const g = document.createElement('div'); g.className = 'msg-group bot';
+            const lbl = document.createElement('div'); lbl.className = 'msg-label'; lbl.textContent = 'Dazzlone';
+            const bbl = document.createElement('div'); bbl.className = 'bubble';
+            g.appendChild(lbl); g.appendChild(bbl); msgsEl.appendChild(g); scrollToBottom();
+            return bbl;
+        }
+
+        /* ── STREAM → RENDER ── */
+        function streamThenRender(container, text) {
+            container.classList.add('streaming-cursor');
+            container.className = 'bot-md';
+            const chars = text.split(''); let i = 0; let out = '';
+            const iv = setInterval(() => {
+                if (i < chars.length) {
+                    out += chars[i++];
+                    container.innerHTML = marked.parse(out);
+                    if (i % 8 === 0) scrollToBottom();
+                } else {
+                    clearInterval(iv);
+                    container.classList.remove('streaming-cursor');
+                    container.innerHTML = marked.parse(text);
+                    scrollToBottom();
+                }
+            }, 6);
+        }
+
+        /* ── PARSE SPECIAL BLOCKS ── */
+        function parseBlocks(raw) {
+            let text = raw, thinkHtml = '', searchHtml = '';
+            const thinkM = text.match(/<think>([\s\S]*?)<\/think>/i);
+            if (thinkM) {
+                const tid = 'th_' + Math.random().toString(36).slice(2, 7);
+                thinkHtml = `<div class="think-box">
+      <div class="think-header" onclick="toggleThink('${tid}',this)">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+        Thinking Process
+        <svg class="think-chevron" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M19 9l-7 7-7-7"/></svg>
+      </div>
+      <div class="think-content" id="${tid}">${esc(thinkM[1].trim())}</div>
+    </div>`;
+                text = text.replace(/<think>[\s\S]*?<\/think>/i, '').trim();
+            }
+            const searchM = text.match(/<search_info\s+query=["']([^"']*)["']\s*\/?>/i);
+            if (searchM) {
+                searchHtml = `<div class="search-box">
+      <div class="search-header">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>
+        Web Search Query
+      </div>
+      <div class="search-query">"${esc(searchM[1])}"</div>
+    </div>`;
+                text = text.replace(/<search_info[^>]*>/i, '').trim();
+            }
+            return { thinkHtml, searchHtml, cleanText: text };
+        }
+
+        function toggleThink(id, hdr) {
+            document.getElementById(id).classList.toggle('collapsed');
+            hdr.classList.toggle('collapsed');
+        }
+
+        /* ── SYSTEM PROMPT ── */
+        function buildSystem() {
+            const base = `You are Dazzlone, a highly intelligent AI assistant created by Znill. When asked about your identity, creator, or who made you, always say: "I am Dazzlone, created by Znill."
+
+STRICT FORMATTING RULES — follow every time:
+- Use **bold** for important terms and key concepts
+- Use ## for main sections, ### for subsections  
+- Use bullet points (- item) for lists of things
+- Use numbered lists (1. item) for steps or ranked items
+- Use \`inline code\` for function names, commands, file paths
+- ALWAYS use fenced code blocks with language for any code:
+  \`\`\`python
+  # code here
+  \`\`\`
+- Use > for important notes, warnings, or tips
+- Add --- between major sections
+- Keep responses well-structured, clear, and professional`;
+
+            if (mode === 'deep') return base + `
+
+DEEP THINKING MODE ACTIVE:
+First, wrap your reasoning inside <think>...</think> tags — think through the problem carefully, consider edge cases, weigh approaches. Then give a comprehensive, well-structured final answer outside the think block.`;
+
+            if (mode === 'search') return base + `
+
+WEB SEARCH MODE ACTIVE:
+Start with <search_info query="your search query here"/> to show what you're researching. Then provide the most thorough, up-to-date information available. Cite knowledge cutoff where relevant. Structure findings with clear sections.`;
+
+            return base;
+        }
+
+        /* ── SEND ── */
+        async function send() {
+            if (isTyping) return;
+            const text = inputEl.value.trim();
+            if (!text) return;
+
+            isTyping = true; sendBtn.disabled = true;
+            inputEl.value = ''; inputEl.style.height = 'auto';
+
+            addUser(text);
+            history.push({ role: 'user', content: text });
+            const tg = addTyping();
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: 'sarvam-30b',
+                        messages: [{ role: 'system', content: buildSystem() }, ...history]
+                    })
+                });
+                const data = await res.json();
+                tg.remove();
+
+                let reply = data.choices?.[0]?.message?.content || ('**Error:** ' + (data.error?.message || 'No response.'));
+                history.push({ role: 'assistant', content: reply });
+
+                const { thinkHtml, searchHtml, cleanText } = parseBlocks(reply);
+                const bbl = addBotBubble();
+
+                if (thinkHtml) bbl.insertAdjacentHTML('beforeend', thinkHtml);
+                if (searchHtml) bbl.insertAdjacentHTML('beforeend', searchHtml);
+
+                const textDiv = document.createElement('div');
+                bbl.appendChild(textDiv);
+                streamThenRender(textDiv, cleanText);
+
+            } catch (err) {
+                tg.remove();
+                const bbl = addBotBubble();
+                bbl.className = 'bubble bot-md';
+                bbl.innerHTML = marked.parse('**Network Error** — please check your connection and try again.');
+                console.error(err);
+            } finally {
+                isTyping = false; sendBtn.disabled = false; inputEl.focus();
+            }
+        }
+    </script>
+</body>
+
+</html>
