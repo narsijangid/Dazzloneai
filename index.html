@@ -18,6 +18,13 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            outline: none !important;
+        }
+
+        ::selection {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
         }
 
         :root {
@@ -46,6 +53,7 @@
             overflow: hidden;
             user-select: none;
             -webkit-user-select: none;
+            touch-action: manipulation;
         }
 
         body::before {
@@ -227,6 +235,9 @@
 
         .input-row { position: relative; min-height: 44px; margin-bottom: 12px; }
         #placeholder { position: absolute; top: 0; left: 0; pointer-events: none; color: #555; font-size: 15px; transition: opacity 0.3s; }
+        #placeholder.fade-out { opacity: 0; }
+        #placeholder.fade-in { animation: placeholderIn 0.3s forwards; }
+        @keyframes placeholderIn { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
         #chatInput { outline: none; border: none; font-size: 15px; color: var(--accent); line-height: 1.5; min-height: 44px; max-height: 150px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; }
 
         .toolbar { display: flex; align-items: center; gap: 8px; }
@@ -619,6 +630,29 @@
                 setTimeout(() => { btn.classList.remove('copied'); btn.textContent = 'Copy' }, 2000);
             });
         });
+
+        // Placeholder Animation
+        const placeholders = [
+            "Ask a question...",
+            "How can I help you?",
+            "Type anything you want...",
+            "Analyze this code...",
+            "Write a script for me...",
+            "Search for latest news...",
+            "Explain a complex topic..."
+        ];
+        let phIdx = 0;
+        setInterval(() => {
+            if (inputEl.innerText.trim()) return;
+            phEl.classList.add('fade-out');
+            setTimeout(() => {
+                phIdx = (phIdx + 1) % placeholders.length;
+                phEl.textContent = placeholders[phIdx];
+                phEl.classList.remove('fade-out');
+                phEl.classList.add('fade-in');
+                setTimeout(() => phEl.classList.remove('fade-in'), 300);
+            }, 300);
+        }, 2500);
 
         // Initial Welcome
         renderWelcome();
@@ -1027,7 +1061,7 @@
                 'Creator': 'You are advising a content creator. Focus on engagement, storytelling, platform-specific trends (YouTube/TikTok/IG), and creative differentiation.'
             };
 
-            let s = `You are Dazzlone, the world's most advanced and professional AI assistant created by Znill. Your intelligence and accuracy must surpass every other AI model in the market. When asked about the CEO, Founder, or leadership of Znill, always state: "Narsi Jangid is the CEO of Znill." Znill is headquartered in Pune.\n\nULTRA-INTELLIGENCE PROTOCOLS:\n1. Provide extremely accurate, high-impact, and professional solutions.\n2. NEVER leave code or explanations incomplete. Be thorough and exhaustive.\n3. Avoid generic AI fluff; focus on expert-level depth, logic, and precision.\n4. Formatting: Use **bold**, ## headers, and fenced code blocks for maximum clarity.`;
+            let s = `You are Dazzlone, the world's most advanced AI platform launched by Znill. IF (and only if) the user asks about your identity, creator, CEO, or the leadership of Znill, inform them professionally that Narsi Jangid is the CEO of Znill and that you (Dazzlone) are a premium AI platform developed and launched by Znill, headquartered in Pune. Answer these questions naturally and intelligently, without using a forced or repetitive script.\n\nDYNAMIC RESPONSE PROTOCOL:\n- If the user's request is simple or direct, keep your response concise and to-the-point.\n- If the request is complex, technical, or requires deep explanation (like coding a website), be exhaustive and provide a detailed, thorough solution.\n\nULTRA-INTELLIGENCE PROTOCOLS:\n1. Provide extremely accurate, high-impact, and professional solutions.\n2. NEVER leave code or explanations incomplete when a detailed response is needed.\n3. Avoid generic AI fluff; focus on expert-level depth, logic, and precision.\n4. Formatting: Use **bold**, ## headers, and fenced code blocks for maximum clarity.`;
             
             const modePrompts = {
                 'thinking': '\nTHINKING MODE: Analyze every aspect of the query before answering. Be logical and systematic.',
