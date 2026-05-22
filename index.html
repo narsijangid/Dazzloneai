@@ -534,6 +534,9 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
 
 <script>
 const SARVAM_KEY = "sk_ac2cc57y_5YIfDcM2ewA0hpmnnCjjTb31";
+// Optional: set to your server endpoint that accepts a file upload and returns a public HTTPS URL.
+// Example response: { "url": "https://site.com/path/file.pdf" }
+const UPLOAD_ENDPOINT = ""; // e.g. 'https://your-server.example.com/upload'
 let questions = [], extractedText = "", generatedContent = [], selectedStyle = "academic";
 
 function goStep(n) {
@@ -782,51 +785,39 @@ async function downloadPDF(){
     const bytes=await doc.save();
     const blob=new Blob([bytes],{type:'application/pdf'});
     const filename = `Assignment_${name.replace(/\s+/g,'_')}.pdf`;
-    try{
-      // Preferred: use File System Access API when available (avoids blob: downloads)
-      if(window.showSaveFilePicker){
-        const opts = {
-          suggestedName: filename,
-          types: [{description: 'PDF', accept: {'application/pdf': ['.pdf']}}]
-        };
-        const handle = await window.showSaveFilePicker(opts);
-        const writable = await handle.createWritable();
-        await writable.write(blob);
-        await writable.close();
-        showToast('PDF saved','success');
-      }
-      // Legacy IE/Edge fallback
-      else if(navigator.msSaveOrOpenBlob){
-        navigator.msSaveOrOpenBlob(blob, filename);
-        showToast('PDF saved','success');
-      }
-      // Web Share (files) API fallback for supported mobile browsers
-      else if(navigator.canShare && navigator.canShare({files:[new File([blob], filename, {type:'application/pdf'})]})){
-        const file = new File([blob], filename, {type:'application/pdf'});
-        await navigator.share({files:[file], title: filename});
-        showToast('Shared via system share','success');
-      }
-      // Standard anchor download as a last-resort fallback
-      else{
-        const url=URL.createObjectURL(blob);
-        const a=document.createElement('a');a.href=url;a.download=filename;a.style.display='none';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
-        showToast('PDF downloaded!','success');
-      }
-    }catch(e){
-      // Final fallback: open PDF data URL in new tab (if downloads are restricted)
+
+    // If an upload endpoint is configured, upload the PDF and use the returned HTTPS URL
+    // to trigger a single-click download (avoids blob: URLs which some WebViews block).
+    if(UPLOAD_ENDPOINT){
       try{
-        const reader=new FileReader();
-        reader.onload=function(){
-          const dataUrl = reader.result;
-          const w = window.open(dataUrl, '_blank');
-          if(!w) throw new Error('Popup blocked or download restricted');
-        };
-        reader.readAsDataURL(blob);
-      }catch(err){
-        showToast('PDF error: '+err.message,'error');
-        console.error(err);
-      }
+        const form = new FormData();
+        form.append('file', blob, filename);
+        const res = await fetch(UPLOAD_ENDPOINT, {method:'POST', body: form});
+        if(res.ok){
+          let data;
+          try{ data = await res.json(); }catch(e){ data = { url: await res.text() }; }
+          const fileUrl = (data && data.url) ? data.url : null;
+          if(fileUrl && /^https?:\/\//i.test(fileUrl)){
+            const a=document.createElement('a'); a.href=fileUrl; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
+            showToast('Download started','success');
+            btn.disabled=false;btn.innerHTML='<i class="ti ti-file-download"></i> PDF';
+            return;
+          } else {
+            console.warn('Upload succeeded but no valid URL returned',data);
+          }
+        } else {
+          console.warn('Upload failed',res.status,await res.text());
+        }
+      }catch(e){console.warn('Upload error',e);} 
+      // if upload fails, fall through to object-URL fallback
     }
+
+    // Fallback: original object URL download (may be blocked in some WebViews)
+    try{
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+      showToast('PDF downloaded!','success');
+    }catch(e){throw e}
   }catch(e){showToast('PDF error: '+e.message,'error');console.error(e);}
   btn.disabled=false;btn.innerHTML='<i class="ti ti-file-download"></i> PDF';
 }
