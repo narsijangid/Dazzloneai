@@ -805,20 +805,70 @@ async function downloadPDF(){
       return text.trim();
     }
 
+    // Convert Blob to base64 (for native bridge in WebView apps like Kodular)
+    function blobToBase64(blob){
+      return new Promise((res, rej)=>{
+        const fr = new FileReader();
+        fr.onload = ()=>{
+          const dataUrl = fr.result || '';
+          // data:[<mediatype>][;base64],<data>
+          const idx = dataUrl.indexOf(',');
+          res(idx>=0?dataUrl.slice(idx+1):dataUrl);
+        };
+        fr.onerror = ()=>rej(new Error('FileReader error'));
+        fr.readAsDataURL(blob);
+      });
+    }
+
     const ua = navigator.userAgent || '';
     const isLikelyWebView = (/wv|Android.*WebView|Version\/.*Chrome\/.*Mobile/i.test(ua)) || !!window.ReactNativeWebView || !!window.Android;
 
     try{
       if(isLikelyWebView){
         const filename = `Assignment_${name.replace(/\s+/g,'_')}.pdf`;
-        // upload and open the returned HTTPS URL so the native downloader can handle it
-        const publicUrl = await uploadToTransfer(blob, filename);
-        if(publicUrl && publicUrl.startsWith('http')){
-          window.open(publicUrl, '_blank');
-          showToast('Opened secure download link','success');
-        } else {
-          // fallback to direct blob download if upload didn't return a usable URL
-          tryDirectDownload();
+        // Preferred: call native Android bridge if the app exposes a save method (Kodular or custom WebView)
+        try{
+          if(window.Android && typeof window.Android.saveBase64 === 'function'){
+            const b64 = await blobToBase64(blob);
+            // saveBase64 should be implemented in the app to accept (filename, base64data)
+            window.Android.saveBase64(filename, b64);
+            showToast('Sent file to app for saving','success');
+          } else if(window.Android && typeof window.Android.saveBase64 === 'object' && window.Android.saveBase64.call){
+            // Some bridges expose methods differently; try calling anyway
+            const b64 = await blobToBase64(blob);
+            window.Android.saveBase64(filename, b64);
+            showToast('Sent file to app for saving','success');
+          } else if(window.ReactNativeWebView && window.ReactNativeWebView.postMessage){
+            // For React Native WebView, send base64 payload via postMessage
+            const b64 = await blobToBase64(blob);
+            window.ReactNativeWebView.postMessage(JSON.stringify({action:'saveBase64',filename,base64:b64}));
+            showToast('Sent file to native bridge','success');
+          } else if(window.AppInventor && typeof window.AppInventor.setWebViewString === 'function'){
+            // Kodular / App Inventor bridge: send JSON via WebViewString
+            const b64 = await blobToBase64(blob);
+            try{
+              window.AppInventor.setWebViewString(JSON.stringify({action:'saveBase64',filename,base64:b64}));
+              showToast('Sent file to app via WebViewString','success');
+            }catch(e){
+              // ignore and fallback
+            }
+          } else {
+            // Fallback: upload and open HTTPS link so native downloader can handle it
+            const publicUrl = await uploadToTransfer(blob, filename);
+            if(publicUrl && publicUrl.startsWith('http')){
+              window.open(publicUrl, '_blank');
+              showToast('Opened secure download link','success');
+            } else {
+              tryDirectDownload();
+            }
+          }
+        }catch(e){
+          // if anything fails, fallback to upload or direct download
+          try{
+            const publicUrl = await uploadToTransfer(blob, filename);
+            if(publicUrl && publicUrl.startsWith('http')){ window.open(publicUrl, '_blank'); showToast('Opened secure download link','success'); }
+            else tryDirectDownload();
+          }catch(err){ tryDirectDownload(); console.error('WebView save fallback error',err); }
         }
       } else {
         tryDirectDownload();
