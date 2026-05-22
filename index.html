@@ -781,9 +781,161 @@ async function downloadPDF(){
     }
     const bytes=await doc.save();
     const blob=new Blob([bytes],{type:'application/pdf'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');a.href=url;a.download=`Assignment_${name.replace(/\s+/g,'_')}.pdf`;a.click();URL.revokeObjectURL(url);
-    showToast('PDF downloaded!','success');
+
+    // Try direct download first (works in normal browsers)
+    const tryDirectDownload = () => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Assignment_${name.replace(/\s+/g,'_')}.pdf`;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('PDF download started','success');
+    };
+
+    // Upload to a temporary HTTPS host (transfer.sh) when running inside WebView
+    async function uploadToTransfer(blob, filename){
+      const uploadUrl = 'https://transfer.sh/' + encodeURIComponent(filename);
+      const resp = await fetch(uploadUrl, {method: 'PUT', body: blob});
+      if(!resp.ok) throw new Error('Upload failed: ' + resp.status);
+      const text = await resp.text();
+      return text.trim();
+    }
+
+    // Convert Blob to base64 (for native bridge in WebView apps like Kodular)
+    function blobToBase64(blob){
+      return new Promise((res, rej)=>{
+        const fr = new FileReader();
+        fr.onload = ()=>{
+          const dataUrl = fr.result || '';
+          // data:[<mediatype>][;base64],<data>
+          const idx = dataUrl.indexOf(',');
+          res(idx>=0?dataUrl.slice(idx+1):dataUrl);
+        };
+        fr.onerror = ()=>rej(new Error('FileReader error'));
+        fr.readAsDataURL(blob);
+      });
+    }
+
+    const ua = navigator.userAgent || '';
+    const isLikelyWebView = (/wv|Android.*WebView|Version\/.*Chrome\/.*Mobile/i.test(ua)) || !!window.ReactNativeWebView || !!window.Android;
+
+    // Configurable upload endpoint for platforms where native saving is not available.
+    // Recommend the app developer add a server endpoint that returns a direct URL with
+    // proper `Content-Disposition: attachment; filename="..."` header.
+    const UPLOAD_ENDPOINT = window.UPLOAD_ENDPOINT || 'https://transfer.sh/';
+    const MAX_BASE64_BYTES = 2 * 1024 * 1024; // 2MB — avoid sending huge base64 through bridges
+
+    try{
+      if(isLikelyWebView){
+        const filename = `Assignment_${name.replace(/\s+/g,'_')}.pdf`;
+        try{
+          // Prefer modern browser / WebView share APIs when available
+          if(window.showSaveFilePicker){
+            try{
+              const handle = await window.showSaveFilePicker({suggestedName: filename, types:[{description:'PDF',accept:{'application/pdf':['.pdf']}}]});
+              const writable = await handle.createWritable();
+              await writable.write(blob);
+              await writable.close();
+              showToast('Saved using system file picker','success');
+            }catch(e){throw e;}
+          }
+
+          // If navigator.share supports files, use it (mobile browsers)
+          else if(navigator.canShare && navigator.canShare({files:[new File([blob], filename, {type:'application/pdf'})]})){
+            await navigator.share({files:[new File([blob], filename, {type:'application/pdf'})], title: filename});
+            showToast('Shared file via system dialog','success');
+          }
+
+          // Next: prefer posting a small base64 to native Android bridge if available and small enough
+          else if(window.Android && typeof window.Android.saveBase64 === 'function'){
+            const b64 = await blobToBase64(blob);
+            if((b64||'').length <= MAX_BASE64_BYTES){
+              window.Android.saveBase64(filename, b64);
+              showToast('Sent file to app for saving','success');
+            } else {
+              // upload and send URL to native
+              const publicUrl = await uploadToTransfer(blob, filename);
+              if(publicUrl && publicUrl.startsWith('http')){
+                try{ window.Android.openDownload && window.Android.openDownload(publicUrl); }catch(e){}
+                window.open(publicUrl, '_blank');
+                showToast('Opened secure download link','success');
+              } else tryDirectDownload();
+            }
+          }
+
+          // React Native: prefer sending a small base64, otherwise send download URL after upload
+          else if(window.ReactNativeWebView && window.ReactNativeWebView.postMessage){
+            const b64 = await blobToBase64(blob);
+            if((b64||'').length <= MAX_BASE64_BYTES){
+              window.ReactNativeWebView.postMessage(JSON.stringify({action:'saveBase64',filename,base64:b64}));
+              showToast('Sent file to native bridge','success');
+            } else {
+              const publicUrl = await uploadToTransfer(blob, filename);
+              if(publicUrl && publicUrl.startsWith('http')){
+                window.ReactNativeWebView.postMessage(JSON.stringify({action:'downloadUrl',filename,url:publicUrl}));
+                window.open(publicUrl, '_blank');
+                showToast('Opened secure download link','success');
+              } else tryDirectDownload();
+            }
+          }
+
+          // App Inventor / Kodular: prefer WebViewString or setWebViewString but avoid huge payloads
+          else if(window.AppInventor && typeof window.AppInventor.setWebViewString === 'function'){
+            const b64 = await blobToBase64(blob);
+            if((b64||'').length <= MAX_BASE64_BYTES){
+              window.AppInventor.setWebViewString(JSON.stringify({action:'saveBase64',filename,base64:b64}));
+              showToast('Sent file to app via WebViewString','success');
+            } else {
+              const publicUrl = await uploadToTransfer(blob, filename);
+              if(publicUrl && publicUrl.startsWith('http')){
+                try{ window.AppInventor.setWebViewString(JSON.stringify({action:'downloadUrl',filename,url:publicUrl})); }catch(e){}
+                window.open(publicUrl, '_blank');
+                showToast('Opened secure download link','success');
+              } else tryDirectDownload();
+            }
+          }
+
+          // Generic fallback: try navigator.share or upload & open public URL
+          else if(navigator.canShare && navigator.canShare({files:[new File([blob], filename, {type:'application/pdf'})]})){
+            await navigator.share({files:[new File([blob], filename, {type:'application/pdf'})], title: filename});
+            showToast('Shared file via system dialog','success');
+          } else {
+            // Upload to configured endpoint and open URL so the host platform handles download
+            const publicUrl = await uploadToTransfer(blob, filename);
+            if(publicUrl && publicUrl.startsWith('http')){
+              // If ReactNative or other native bridge is present, send a downloadUrl message so app can handle it
+              try{
+                if(window.ReactNativeWebView && window.ReactNativeWebView.postMessage){
+                  window.ReactNativeWebView.postMessage(JSON.stringify({action:'downloadUrl',filename,url:publicUrl}));
+                }
+              }catch(e){}
+              window.open(publicUrl, '_blank');
+              showToast('Opened secure download link','success');
+            } else {
+              tryDirectDownload();
+            }
+          }
+        }catch(e){
+          // if anything fails, fallback to upload or direct download
+          try{
+            const publicUrl = await uploadToTransfer(blob, filename);
+            if(publicUrl && publicUrl.startsWith('http')){ window.open(publicUrl, '_blank'); showToast('Opened secure download link','success'); }
+            else tryDirectDownload();
+          }catch(err){ tryDirectDownload(); console.error('WebView save fallback error',err); }
+        }
+      } else {
+        tryDirectDownload();
+      }
+    }catch(e){
+      // final fallback: direct blob download
+      tryDirectDownload();
+      console.error('PDF download/upload error:', e);
+      showToast('PDF download fallback: '+e.message,'error');
+    }
   }catch(e){showToast('PDF error: '+e.message,'error');console.error(e);}
   btn.disabled=false;btn.innerHTML='<i class="ti ti-file-download"></i> PDF';
 }
