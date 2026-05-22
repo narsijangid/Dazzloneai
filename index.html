@@ -534,9 +534,6 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
 
 <script>
 const SARVAM_KEY = "sk_ac2cc57y_5YIfDcM2ewA0hpmnnCjjTb31";
-// Optional: set to your server endpoint that accepts a file upload and returns a public HTTPS URL.
-// Example response: { "url": "https://site.com/path/file.pdf" }
-const UPLOAD_ENDPOINT = ""; // e.g. 'https://your-server.example.com/upload'
 let questions = [], extractedText = "", generatedContent = [], selectedStyle = "academic";
 
 function goStep(n) {
@@ -784,40 +781,54 @@ async function downloadPDF(){
     }
     const bytes=await doc.save();
     const blob=new Blob([bytes],{type:'application/pdf'});
-    const filename = `Assignment_${name.replace(/\s+/g,'_')}.pdf`;
 
-    // If an upload endpoint is configured, upload the PDF and use the returned HTTPS URL
-    // to trigger a single-click download (avoids blob: URLs which some WebViews block).
-    if(UPLOAD_ENDPOINT){
-      try{
-        const form = new FormData();
-        form.append('file', blob, filename);
-        const res = await fetch(UPLOAD_ENDPOINT, {method:'POST', body: form});
-        if(res.ok){
-          let data;
-          try{ data = await res.json(); }catch(e){ data = { url: await res.text() }; }
-          const fileUrl = (data && data.url) ? data.url : null;
-          if(fileUrl && /^https?:\/\//i.test(fileUrl)){
-            const a=document.createElement('a'); a.href=fileUrl; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
-            showToast('Download started','success');
-            btn.disabled=false;btn.innerHTML='<i class="ti ti-file-download"></i> PDF';
-            return;
-          } else {
-            console.warn('Upload succeeded but no valid URL returned',data);
-          }
-        } else {
-          console.warn('Upload failed',res.status,await res.text());
-        }
-      }catch(e){console.warn('Upload error',e);} 
-      // if upload fails, fall through to object-URL fallback
+    // Try direct download first (works in normal browsers)
+    const tryDirectDownload = () => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Assignment_${name.replace(/\s+/g,'_')}.pdf`;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('PDF download started','success');
+    };
+
+    // Upload to a temporary HTTPS host (transfer.sh) when running inside WebView
+    async function uploadToTransfer(blob, filename){
+      const uploadUrl = 'https://transfer.sh/' + encodeURIComponent(filename);
+      const resp = await fetch(uploadUrl, {method: 'PUT', body: blob});
+      if(!resp.ok) throw new Error('Upload failed: ' + resp.status);
+      const text = await resp.text();
+      return text.trim();
     }
 
-    // Fallback: original object URL download (may be blocked in some WebViews)
+    const ua = navigator.userAgent || '';
+    const isLikelyWebView = (/wv|Android.*WebView|Version\/.*Chrome\/.*Mobile/i.test(ua)) || !!window.ReactNativeWebView || !!window.Android;
+
     try{
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
-      showToast('PDF downloaded!','success');
-    }catch(e){throw e}
+      if(isLikelyWebView){
+        const filename = `Assignment_${name.replace(/\s+/g,'_')}.pdf`;
+        // upload and open the returned HTTPS URL so the native downloader can handle it
+        const publicUrl = await uploadToTransfer(blob, filename);
+        if(publicUrl && publicUrl.startsWith('http')){
+          window.open(publicUrl, '_blank');
+          showToast('Opened secure download link','success');
+        } else {
+          // fallback to direct blob download if upload didn't return a usable URL
+          tryDirectDownload();
+        }
+      } else {
+        tryDirectDownload();
+      }
+    }catch(e){
+      // final fallback: direct blob download
+      tryDirectDownload();
+      console.error('PDF download/upload error:', e);
+      showToast('PDF download fallback: '+e.message,'error');
+    }
   }catch(e){showToast('PDF error: '+e.message,'error');console.error(e);}
   btn.disabled=false;btn.innerHTML='<i class="ti ti-file-download"></i> PDF';
 }
