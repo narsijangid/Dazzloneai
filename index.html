@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>AssignmentAI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&family=Google+Sans+Display:wght@400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
@@ -12,77 +13,278 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#ffffff;--bg-page:#f8f9fa;--bg-card:#ffffff;--bg-hover:#f1f3f4;--bg-active:#e8f0fe;
-  --blue:#1a73e8;--blue-light:#e8f0fe;--green:#1e8e3e;--green-light:#e6f4ea;
-  --red:#d93025;--red-light:#fce8e6;--text:#202124;--text2:#5f6368;--text3:#80868b;
-  --border:#dadce0;--r:8px;--r2:12px;--r3:999px;
+  --bg:#ffffff;
+  --bg-page:#f8f9fa;
+  --bg-card:#ffffff;
+  --bg-hover:#f1f3f4;
+  --bg-active:#e8f0fe;
+
+  --blue:#1a73e8;
+  --blue-light:#e8f0fe;
+  --blue-mid:#4285f4;
+  --green:#1e8e3e;
+  --green-light:#e6f4ea;
+  --red:#d93025;
+  --red-light:#fce8e6;
+  --yellow:#f9ab00;
+  --yellow-light:#fef7e0;
+  --purple:#9334e6;
+  --purple-light:#f3e8fd;
+
+  --text:#202124;
+  --text2:#5f6368;
+  --text3:#80868b;
+  --text-inv:#ffffff;
+
+  --border:#dadce0;
+  --border-focus:#1a73e8;
+
+  --r:8px;
+  --r2:12px;
+  --r3:999px;
   --font:'Plus Jakarta Sans',sans-serif;
   --shadow:0 1px 3px rgba(60,64,67,.15),0 1px 2px rgba(60,64,67,.12);
   --shadow-md:0 2px 8px rgba(60,64,67,.15),0 1px 3px rgba(60,64,67,.1);
 }
 html{height:100%;overflow:hidden}
 body{background:var(--bg-page);color:var(--text);font-family:var(--font);font-size:14px;display:flex;flex-direction:column;height:100dvh;overflow:hidden}
-.header{background:var(--bg);border-bottom:1px solid var(--border);padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+
+/* HEADER */
+.header{
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+  padding:0 16px;
+  height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
 .logo{display:flex;align-items:center;gap:10px}
-.logo-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:#fff;border:1.5px solid var(--border);}
-.logo-icon::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 35% 35%, #4285f4 6px, transparent 6px),radial-gradient(circle at 65% 35%, #ea4335 6px, transparent 6px),radial-gradient(circle at 35% 65%, #34a853 6px, transparent 6px),radial-gradient(circle at 65% 65%, #fbbc04 6px, transparent 6px);}
+.logo-icon{
+  width:36px;height:36px;
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  background:#fff;
+  border:1.5px solid var(--border);
+}
+/* Google-style colorful dots */
+.logo-icon::before{
+  content:'';
+  position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 35% 35%, #4285f4 6px, transparent 6px),
+    radial-gradient(circle at 65% 35%, #ea4335 6px, transparent 6px),
+    radial-gradient(circle at 35% 65%, #34a853 6px, transparent 6px),
+    radial-gradient(circle at 65% 65%, #fbbc04 6px, transparent 6px);
+}
 .logo-name{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.3px}
-.logo-name span.b{color:#4285f4}.logo-name span.r{color:#ea4335}.logo-name span.y{color:#fbbc04}.logo-name span.g{color:#34a853}
-.header-chip{font-size:11px;font-weight:600;padding:4px 11px;background:var(--blue-light);color:var(--blue);border-radius:var(--r3);}
-.step-nav{background:var(--bg);border-bottom:1px solid var(--border);display:flex;flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
+.logo-name span.b{color:#4285f4}
+.logo-name span.r{color:#ea4335}
+.logo-name span.y{color:#fbbc04}
+.logo-name span.g{color:#34a853}
+.header-chip{
+  font-size:11px;font-weight:600;
+  padding:4px 11px;
+  background:var(--blue-light);
+  color:var(--blue);
+  border-radius:var(--r3);
+  letter-spacing:.2px;
+}
+
+/* STEP NAV */
+.step-nav{
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+  display:flex;
+  flex-shrink:0;
+  overflow-x:auto;scrollbar-width:none;
+}
 .step-nav::-webkit-scrollbar{display:none}
-.step-tab{flex:1;min-width:72px;padding:14px 6px 12px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;border:none;background:none;color:var(--text3);font-family:var(--font);font-size:11px;font-weight:600;letter-spacing:.3px;position:relative;transition:color .2s;}
-.step-tab i{font-size:20px}
-.step-tab.active{color:var(--blue)}.step-tab.active i{color:var(--blue)}
-.step-tab::after{content:'';position:absolute;bottom:0;left:8%;right:8%;height:3px;background:var(--blue);border-radius:3px 3px 0 0;transform:scaleX(0);transition:transform .22s cubic-bezier(.4,0,.2,1);}
+.step-tab{
+  flex:1;min-width:72px;
+  padding:14px 6px 12px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;border:none;background:none;
+  color:var(--text3);
+  font-family:var(--font);font-size:11px;font-weight:600;
+  letter-spacing:.3px;position:relative;
+  transition:color .2s;
+}
+.step-tab i{font-size:20px;transition:color .2s}
+.step-tab.active{color:var(--blue)}
+.step-tab.active i{color:var(--blue)}
+.step-tab::after{
+  content:'';
+  position:absolute;bottom:0;left:8%;right:8%;
+  height:3px;background:var(--blue);
+  border-radius:3px 3px 0 0;
+  transform:scaleX(0);
+  transition:transform .22s cubic-bezier(.4,0,.2,1);
+}
 .step-tab.active::after{transform:scaleX(1)}
-.step-tab.done i{color:var(--green)}.step-tab.done{color:var(--green)}
-.screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:80px;display:none;flex-direction:column;gap:12px;min-height:0;}
+.step-tab.done i{color:var(--green)}
+.step-tab.done{color:var(--green)}
+
+/* SCREENS */
+.screen{
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding:16px;
+  padding-bottom:80px;
+  display:none;
+  flex-direction:column;
+  gap:12px;
+  min-height:0;
+}
 .screen.active{display:flex}
+
+/* CARD */
 .card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;box-shadow:var(--shadow)}
-.card-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.card-head{
+  padding:12px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
 .card-head-dot{width:8px;height:8px;border-radius:50%}
-.card-head-title{font-size:13px;font-weight:700;color:var(--text)}
+.card-head-title{font-size:13px;font-weight:700;color:var(--text);letter-spacing:-.1px}
 .card-body{padding:14px 16px}
-.field{margin-bottom:13px}.field:last-child{margin-bottom:0}
+
+/* FORM */
+.field{margin-bottom:13px}
+.field:last-child{margin-bottom:0}
 .label{display:block;font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.6px;text-transform:uppercase;margin-bottom:5px}
-input[type=text],select,textarea{width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;color:var(--text);font-family:var(--font);font-size:14px;outline:none;transition:border-color .15s,box-shadow .15s;appearance:none;-webkit-appearance:none;}
-input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,115,232,.12);}
-input::placeholder{color:var(--text3)}
-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235f6368' fill='none' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer;}
+input[type=text],input[type=email],select,textarea{
+  width:100%;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:10px 12px;
+  color:var(--text);
+  font-family:var(--font);font-size:14px;font-weight:400;
+  outline:none;
+  transition:border-color .15s,box-shadow .15s;
+  appearance:none;-webkit-appearance:none;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(26,115,232,.12);
+}
+input::placeholder{color:var(--text3);font-weight:400}
+select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235f6368' fill='none' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer;
+}
+select option{background:#fff;color:var(--text)}
+textarea{resize:vertical;min-height:80px;line-height:1.6}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.upload-zone{border:2px dashed var(--border);border-radius:var(--r2);padding:28px 20px;text-align:center;cursor:pointer;position:relative;background:#fafafa;}
+
+/* UPLOAD */
+.upload-zone{
+  border:2px dashed var(--border);
+  border-radius:var(--r2);
+  padding:28px 20px;text-align:center;cursor:pointer;
+  position:relative;transition:all .2s;background:#fafafa;
+}
+.upload-zone:active{background:var(--blue-light);border-color:var(--blue)}
 .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .upload-icon{font-size:36px;color:var(--blue);margin-bottom:8px;display:block}
 .upload-txt{font-size:14px;font-weight:600;color:var(--text2)}
 .upload-hint{font-size:12px;color:var(--text3);margin-top:3px}
-.file-chip{margin-top:10px;background:var(--green-light);border:1px solid #ceead6;border-radius:var(--r);padding:10px 13px;display:flex;align-items:center;gap:9px;font-size:13px;}
+
+.file-chip{
+  margin-top:10px;
+  background:var(--green-light);
+  border:1px solid #ceead6;
+  border-radius:var(--r);
+  padding:10px 13px;
+  display:flex;align-items:center;gap:9px;font-size:13px;
+}
 .file-chip i{color:var(--green);font-size:18px}
-.file-chip .fn{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
-.file-chip .rm-btn{color:var(--text3);cursor:pointer;font-size:18px}
-.q-item{background:#fafafa;border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;display:flex;align-items:flex-start;gap:9px;margin-bottom:7px;animation:itemIn .18s ease;}
+.file-chip .fn{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;color:var(--text)}
+.file-chip .rm-btn{color:var(--text3);cursor:pointer;font-size:18px;flex-shrink:0}
+
+/* Q LIST */
+.q-list{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+.q-item{
+  background:#fafafa;
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:10px 12px;
+  display:flex;align-items:flex-start;gap:9px;
+  animation:itemIn .18s ease;
+}
 @keyframes itemIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-.q-badge{font-size:10px;font-weight:700;background:var(--blue-light);color:var(--blue);border-radius:4px;padding:2px 7px;flex-shrink:0;margin-top:2px;}
-.q-txt{flex:1;font-size:13px;line-height:1.5}
+.q-badge{
+  font-size:10px;font-weight:700;
+  background:var(--blue-light);color:var(--blue);
+  border-radius:4px;padding:2px 7px;flex-shrink:0;margin-top:2px;
+}
+.q-txt{flex:1;font-size:13px;color:var(--text);line-height:1.5}
 .q-rm{color:var(--text3);cursor:pointer;font-size:17px;flex-shrink:0;padding:2px}
+.q-rm:active{color:var(--red)}
 .empty-q{text-align:center;padding:18px;font-size:13px;color:var(--text3)}
-.q-add-row{display:flex;gap:8px}.q-add-row input{flex:1}
+.q-add-row{display:flex;gap:8px}
+.q-add-row input{flex:1}
+
+/* STYLE OPTIONS */
 .style-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.style-opt{background:#fafafa;border:1.5px solid var(--border);border-radius:var(--r2);padding:13px 12px;cursor:pointer;transition:all .18s;}
-.style-opt.active{background:var(--blue-light);border-color:var(--blue);}
-.so-icon{font-size:22px;margin-bottom:6px;color:var(--text3)}.style-opt.active .so-icon{color:var(--blue)}
-.so-name{font-size:13px;font-weight:700;margin-bottom:2px}.so-sub{font-size:11px;color:var(--text3)}
-.btn{padding:10px 18px;border-radius:var(--r);border:none;font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:all .15s;}
+.style-opt{
+  background:#fafafa;
+  border:1.5px solid var(--border);
+  border-radius:var(--r2);
+  padding:13px 12px;cursor:pointer;
+  transition:all .18s;
+}
+.style-opt.active{
+  background:var(--blue-light);
+  border-color:var(--blue);
+}
+.so-icon{font-size:22px;margin-bottom:6px;color:var(--text3)}
+.style-opt.active .so-icon{color:var(--blue)}
+.so-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px}
+.so-sub{font-size:11px;color:var(--text3)}
+.style-opt.active .so-sub{color:#6faee8}
+
+/* BUTTONS */
+.btn{
+  padding:10px 18px;border-radius:var(--r);border:none;
+  font-family:var(--font);font-size:14px;font-weight:600;
+  cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  transition:all .15s;
+}
 .btn:active{transform:scale(.97)}
-.btn-primary{background:var(--blue);color:#fff}.btn-primary:active{background:#1557b0}
-.btn-ghost{background:#fff;color:var(--text2);border:1px solid var(--border)}.btn-ghost:active{background:var(--bg-hover)}
-.btn-success{background:var(--green);color:#fff}.btn-success:active{background:#157d32}
-.btn-full{width:100%}.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:active{background:#1557b0}
+.btn-ghost{background:#fff;color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:active{background:var(--bg-hover)}
+.btn-success{background:var(--green);color:#fff}
+.btn-success:active{background:#157d32}
+.btn-full{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
 .btn-icon{width:42px;height:42px;padding:0;font-size:18px}
-.gen-btn{width:100%;padding:14px;border:none;border-radius:var(--r2);font-family:var(--font);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--blue);color:#fff;box-shadow:var(--shadow-md);transition:all .18s;}
-.gen-btn:active{background:#1557b0;transform:scale(.98)}.gen-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
-.progress-card{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:18px;box-shadow:var(--shadow);}
-.prog-title{font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+
+/* GENERATE BTN */
+.gen-btn{
+  width:100%;padding:14px;
+  border:none;border-radius:var(--r2);
+  font-family:var(--font);font-size:16px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+  background:var(--blue);color:#fff;
+  box-shadow:var(--shadow-md);
+  transition:all .18s;
+  letter-spacing:-.1px;
+}
+.gen-btn:active{background:#1557b0;transform:scale(.98)}
+.gen-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+/* PROGRESS */
+.progress-card{
+  background:#fff;border:1px solid var(--border);border-radius:var(--r2);
+  padding:18px;box-shadow:var(--shadow);
+}
+.prog-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .prog-bar{height:4px;background:#e8eaed;border-radius:4px;overflow:hidden;margin-bottom:12px}
 .prog-fill{height:100%;background:var(--blue);border-radius:4px;transition:width .4s cubic-bezier(.4,0,.2,1);width:0}
 .prog-chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -90,13 +292,24 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .p-chip.done{background:var(--green-light);color:var(--green)}
 .p-chip.run{background:var(--blue-light);color:var(--blue);animation:chipPulse 1.4s ease infinite}
 @keyframes chipPulse{0%,100%{opacity:1}50%{opacity:.5}}
-.output-bar{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);}
+
+/* OUTPUT BAR */
+.output-bar{
+  background:#fff;border:1px solid var(--border);border-radius:var(--r2);
+  padding:12px 14px;display:flex;align-items:center;justify-content:space-between;
+  box-shadow:var(--shadow);
+}
 .ob-label{font-size:12px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:7px}
 .ob-label i{color:var(--green)}
 .ob-actions{display:flex;gap:8px}
+
+/* PREVIEW DOC */
 .academic-doc{background:#fff;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;box-shadow:var(--shadow)}
-.doc-banner{background:linear-gradient(135deg,#4285f4 0%,#1a73e8 100%);padding:20px 18px 16px;}
-.doc-uni{font-size:16px;font-weight:700;color:#fff;margin-bottom:2px}
+.doc-banner{
+  background:linear-gradient(135deg,#4285f4 0%,#1a73e8 100%);
+  padding:20px 18px 16px;
+}
+.doc-uni{font-size:16px;font-weight:700;color:#fff;margin-bottom:2px;letter-spacing:-.2px}
 .doc-sub{font-size:12px;color:rgba(255,255,255,.8)}
 .doc-body{padding:16px}
 .info-tbl{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:12px;border:1px solid var(--border)}
@@ -108,34 +321,62 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .qblock:last-child{border-bottom:none;margin-bottom:0}
 .qblock-num{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--blue);margin-bottom:4px;display:flex;align-items:center;gap:6px}
 .qblock-q{font-size:13px;color:var(--text2);margin-bottom:10px;padding:8px 11px;background:#f8f9fa;border-left:3px solid var(--blue);border-radius:0 6px 6px 0;line-height:1.5;font-style:italic}
-.qblock-a{font-size:13px;line-height:1.8}
+.qblock-a{font-size:13px;color:var(--text);line-height:1.8}
 .qblock-a p{margin-bottom:8px}
+.qblock-a strong{font-weight:700;color:var(--text)}
+
+/* EMPTY */
 .empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:48px 24px;text-align:center}
 .empty-ico{font-size:56px;color:#dadce0;margin-bottom:4px}
-.empty-ttl{font-size:17px;font-weight:700}
+.empty-ttl{font-size:17px;font-weight:700;color:var(--text)}
 .empty-sub{font-size:13px;color:var(--text3);line-height:1.6;max-width:260px}
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);border-radius:var(--r3);padding:11px 18px;font-size:13px;font-weight:500;color:#fff;z-index:9999;display:flex;align-items:center;gap:8px;transition:transform .25s ease,opacity .25s ease;white-space:nowrap;max-width:90vw;box-shadow:0 4px 16px rgba(0,0,0,.25);opacity:0;}
+
+/* ERROR */
+.err-card{background:var(--red-light);border:1px solid #f5c6c3;border-radius:var(--r);padding:12px 14px;font-size:13px;color:var(--red);display:flex;gap:9px;line-height:1.5}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--text);
+  border-radius:var(--r3);
+  padding:11px 18px;
+  font-size:13px;font-weight:500;
+  color:#fff;z-index:9999;
+  display:flex;align-items:center;gap:8px;
+  transition:transform .25s ease,opacity .25s ease;
+  white-space:nowrap;max-width:90vw;
+  box-shadow:0 4px 16px rgba(0,0,0,.25);
+  opacity:0;
+}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-.toast.success i{color:#34a853}.toast.error i{color:#ea4335}
-.bottom-action{padding:10px 16px;flex-shrink:0;background:var(--bg);border-top:1px solid var(--border);position:fixed;bottom:0;left:0;right:0;z-index:100;box-shadow:0 -1px 4px rgba(60,64,67,.1);}
+.toast.success i{color:#34a853}
+.toast.error i{color:#ea4335}
+
+/* BOTTOM ACTION */
+.bottom-action{
+  padding:10px 16px;
+  flex-shrink:0;
+  background:var(--bg);
+  border-top:1px solid var(--border);
+  position:fixed;
+  bottom:0;left:0;right:0;
+  z-index:100;
+  box-shadow:0 -1px 4px rgba(60,64,67,.1);
+}
+
+/* SPIN */
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .spin{animation:spin .9s linear infinite}
-.extract-status{margin-top:7px;font-size:12px;color:var(--text3)}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#dadce0;border-radius:4px}
-.divider{height:1px;background:var(--border);margin:10px 0}
 
-/* PDF SAVE MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998;display:flex;align-items:flex-end;justify-content:center;}
-.modal-overlay.hidden{display:none}
-.modal-sheet{background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:480px;animation:slideUp .25s ease;}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.modal-title{font-size:16px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:9px}
-.modal-sub{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6}
-.modal-btn{width:100%;padding:13px;border:none;border-radius:var(--r);font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:10px;transition:all .15s;}
-.modal-btn:active{transform:scale(.97)}
-.modal-btn-primary{background:var(--blue);color:#fff}
-.modal-btn-ghost{background:#f1f3f4;color:var(--text2)}
-.modal-btn-success{background:var(--green);color:#fff}
+/* STATUS DOT */
+.extract-status{margin-top:7px;font-size:12px;color:var(--text3)}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#dadce0;border-radius:4px}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:10px 0}
 </style>
 </head>
 <body>
@@ -143,7 +384,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <header class="header">
   <div class="logo">
     <div class="logo-icon"></div>
-    <span class="logo-name"><span class="b">A</span><span class="r">s</span><span class="y">s</span><span class="g">i</span>gnmentAI</span>
+    <span class="logo-name">
+      <span class="b">A</span><span class="r">s</span><span class="y">s</span><span class="g">i</span>gnmentAI
+    </span>
   </div>
   <div class="header-chip">Sarvam AI</div>
 </header>
@@ -198,7 +441,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div class="card">
     <div class="card-head"><div class="card-head-dot" style="background:#fbbc04"></div><span class="card-head-title">Upload Question File</span></div>
     <div class="card-body">
-      <div class="upload-zone">
+      <div class="upload-zone" id="dropZone">
         <input type="file" id="fileInput" accept=".txt,.pdf,.docx,.doc" onchange="handleFile(this)">
         <span class="upload-icon"><i class="ti ti-cloud-upload"></i></span>
         <div class="upload-txt">Tap to upload file</div>
@@ -221,7 +464,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 </div>
 <div class="bottom-action" id="ba1" style="display:none">
-  <div class="row2">
+  <div class="row2" style="gap:10px">
     <button class="btn btn-ghost btn-full" onclick="goStep(0)"><i class="ti ti-arrow-left"></i> Back</button>
     <button class="btn btn-primary btn-full" onclick="nextStep(1)">Continue <i class="ti ti-arrow-right"></i></button>
   </div>
@@ -235,19 +478,23 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="style-grid">
         <div class="style-opt active" data-val="academic" onclick="selectStyle(this)">
           <div class="so-icon"><i class="ti ti-book"></i></div>
-          <div class="so-name">Academic</div><div class="so-sub">Formal & structured</div>
+          <div class="so-name">Academic</div>
+          <div class="so-sub">Formal & structured</div>
         </div>
         <div class="style-opt" data-val="simple" onclick="selectStyle(this)">
           <div class="so-icon"><i class="ti ti-sun"></i></div>
-          <div class="so-name">Simple</div><div class="so-sub">Clear & direct</div>
+          <div class="so-name">Simple</div>
+          <div class="so-sub">Clear & direct</div>
         </div>
         <div class="style-opt" data-val="detailed" onclick="selectStyle(this)">
           <div class="so-icon"><i class="ti ti-layers"></i></div>
-          <div class="so-name">Detailed</div><div class="so-sub">Elaborate & thorough</div>
+          <div class="so-name">Detailed</div>
+          <div class="so-sub">Elaborate & thorough</div>
         </div>
         <div class="style-opt" data-val="points" onclick="selectStyle(this)">
           <div class="so-icon"><i class="ti ti-list"></i></div>
-          <div class="so-name">Point-wise</div><div class="so-sub">Bullets & examples</div>
+          <div class="so-name">Point-wise</div>
+          <div class="so-sub">Bullets & examples</div>
         </div>
       </div>
     </div>
@@ -267,7 +514,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <span class="ob-label"><i class="ti ti-check-circle"></i> Assignment ready</span>
       <div class="ob-actions">
         <button class="btn btn-ghost btn-icon" onclick="copyText()" title="Copy"><i class="ti ti-copy"></i></button>
-        <button class="btn btn-success" onclick="showSaveOptions()" id="dlBtn"><i class="ti ti-file-download"></i> Save PDF</button>
+        <button class="btn btn-success" onclick="downloadPDF()" id="dlBtn"><i class="ti ti-file-download"></i> PDF</button>
       </div>
     </div>
   </div>
@@ -283,55 +530,62 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <button class="btn btn-ghost btn-full" onclick="goStep(2)"><i class="ti ti-arrow-left"></i> Back to Generate</button>
 </div>
 
-<!-- SAVE OPTIONS MODAL -->
-<div class="modal-overlay hidden" id="saveModal" onclick="closeSaveModal(event)">
-  <div class="modal-sheet">
-    <div class="modal-title"><i class="ti ti-file-download" style="color:var(--blue)"></i> Save Assignment</div>
-    <div class="modal-sub">Choose how you want to save your assignment:</div>
-    <button class="modal-btn modal-btn-success" onclick="openPdfInBrowser()">
-      <i class="ti ti-external-link"></i> Open PDF in Browser / Save
-    </button>
-    <button class="modal-btn modal-btn-primary" onclick="printPage()">
-      <i class="ti ti-printer"></i> Print / Save as PDF
-    </button>
-    <button class="modal-btn modal-btn-ghost" onclick="copyAllText()">
-      <i class="ti ti-copy"></i> Copy All Text
-    </button>
-    <button class="modal-btn modal-btn-ghost" onclick="closeSaveModal()">
-      Cancel
-    </button>
-  </div>
-</div>
-
 <div class="toast" id="toast"><i class="ti ti-check"></i><span id="toastMsg"></span></div>
 
 <script>
 const SARVAM_KEY = "sk_ac2cc57y_5YIfDcM2ewA0hpmnnCjjTb31";
-let questions=[], extractedText="", generatedContent=[], selectedStyle="academic";
-let pdfBase64=""; // store generated PDF base64
+let questions = [], extractedText = "", generatedContent = [], selectedStyle = "academic";
 
-function goStep(n){
+function goStep(n) {
   document.querySelectorAll('.screen').forEach((s,i)=>s.classList.toggle('active',i===n));
   document.querySelectorAll('.step-tab').forEach((t,i)=>t.classList.toggle('active',i===n));
-  ['ba0','ba1','ba2','ba3'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.style.display=i===n?'block':'none';});
+  ['ba0','ba1','ba2','ba3'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display=i===n?'block':'none';
+  });
 }
-function nextStep(from){
-  if(from===0){if(!v('uniName')||!v('studentName')||!v('rollNum')||!v('subject')){showToast('Fill all required fields','error');return;}markDone(0);goStep(1);}
-  else if(from===1){if(!questions.length&&!extractedText){showToast('Add questions or upload a file','error');return;}markDone(1);goStep(2);}
+
+function nextStep(from) {
+  if(from===0){
+    if(!v('uniName')||!v('studentName')||!v('rollNum')||!v('subject')){showToast('Fill all required fields','error');return;}
+    markDone(0);goStep(1);
+  } else if(from===1){
+    if(!questions.length&&!extractedText){showToast('Add questions or upload a file','error');return;}
+    markDone(1);goStep(2);
+  }
 }
+
 function v(id){return document.getElementById(id).value.trim();}
 function markDone(n){document.getElementById('stab'+n).classList.add('done');}
-function selectStyle(el){document.querySelectorAll('.style-opt').forEach(e=>e.classList.remove('active'));el.classList.add('active');selectedStyle=el.dataset.val;}
-function addQuestion(text){const inp=document.getElementById('qInput');const q=text||inp.value.trim();if(!q)return;questions.push(q);renderQuestions();inp.value='';}
+
+function selectStyle(el){
+  document.querySelectorAll('.style-opt').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');selectedStyle=el.dataset.val;
+}
+
+function addQuestion(text){
+  const inp=document.getElementById('qInput');
+  const q=text||inp.value.trim();if(!q)return;
+  questions.push(q);renderQuestions();inp.value='';
+}
+
 function removeQuestion(i){questions.splice(i,1);renderQuestions();}
+
 function renderQuestions(){
   const el=document.getElementById('questionList');
   if(!questions.length){el.innerHTML='<div class="empty-q">No questions added yet</div>';return;}
-  el.innerHTML=questions.map((q,i)=>`<div class="q-item"><span class="q-badge">Q${i+1}</span><span class="q-txt">${escapeHtml(q)}</span><i class="ti ti-x q-rm" onclick="removeQuestion(${i})"></i></div>`).join('');
+  el.innerHTML=questions.map((q,i)=>`
+    <div class="q-item">
+      <span class="q-badge">Q${i+1}</span>
+      <span class="q-txt">${escapeHtml(q)}</span>
+      <i class="ti ti-x q-rm" onclick="removeQuestion(${i})"></i>
+    </div>`).join('');
 }
+
 async function handleFile(input){
   const file=input.files[0];if(!file)return;
-  const info=document.getElementById('fileInfo'),status=document.getElementById('extractStatus');
+  const info=document.getElementById('fileInfo');
+  const status=document.getElementById('extractStatus');
   info.innerHTML=`<div class="file-chip"><i class="ti ti-file-text"></i><span class="fn">${escapeHtml(file.name)}</span><i class="ti ti-x rm-btn" onclick="clearFile()"></i></div>`;
   status.innerHTML='<span><i class="ti ti-loader spin"></i> Reading…</span>';
   try{
@@ -339,241 +593,302 @@ async function handleFile(input){
     if(ext==='txt'){extractedText=await file.text();}
     else if(ext==='docx'||ext==='doc'){const buf=await file.arrayBuffer();const r=await mammoth.extractRawText({arrayBuffer:buf});extractedText=r.value;}
     else{extractedText=await file.text();}
-    status.innerHTML=`<span style="color:var(--green)"><i class="ti ti-check"></i> ${extractedText.length.toLocaleString()} chars extracted</span>`;
+    status.innerHTML=`<span style="color:var(--green)"><i class="ti ti-check"></i> ${extractedText.length.toLocaleString()} characters extracted</span>`;
     showToast('File loaded!','success');autoExtract(extractedText);
   }catch(e){status.innerHTML=`<span style="color:var(--red)"><i class="ti ti-alert-circle"></i> ${e.message}</span>`;}
 }
+
 function autoExtract(text){
   const patterns=[/Q[\.\s]*(\d+)[\.\s:]+([^\n]+)/gi,/Question\s+(\d+)[\.\s:]+([^\n]+)/gi,/^\d+[\.\)]\s+([^\n]{15,})/gm];
   const found=new Set();
   for(const p of patterns){let m;while((m=p.exec(text))!==null){const q=(m[2]||m[1]).trim().replace(/answer[\s\S]*/i,'').trim();if(q.length>10&&q.length<300)found.add(q);}}
   if(found.size>0){questions=[...found];renderQuestions();showToast(`${found.size} question(s) detected!`,'success');}
 }
+
 function clearFile(){
-  document.getElementById('fileInfo').innerHTML='';document.getElementById('extractStatus').textContent='';
-  document.getElementById('fileInput').value='';extractedText='';questions=[];renderQuestions();
+  document.getElementById('fileInfo').innerHTML='';
+  document.getElementById('extractStatus').textContent='';
+  document.getElementById('fileInput').value='';
+  extractedText='';questions=[];renderQuestions();
 }
+
 async function generateAssignment(){
   const uni=v('uniName'),name=v('studentName'),roll=v('rollNum'),program=v('program'),
         sem=v('semester'),subject=v('subject'),session=v('session'),
-        setNum=document.getElementById('setNum').value,wordCount=document.getElementById('wordCount').value;
+        setNum=document.getElementById('setNum').value,
+        wordCount=document.getElementById('wordCount').value;
   if(!uni||!name||!roll||!subject){showToast('Fill details first','error');goStep(0);return;}
   let qs=[...questions];
   if(!qs.length&&!extractedText){showToast('Add questions first','error');goStep(1);return;}
   const btn=document.getElementById('genBtn');
   btn.disabled=true;btn.innerHTML='<i class="ti ti-loader spin"></i> Generating…';
-  document.getElementById('errorArea').innerHTML='';document.getElementById('outputActions').style.display='none';
+  document.getElementById('errorArea').innerHTML='';
+  document.getElementById('outputActions').style.display='none';
   const steps=['Reading','Processing','Writing','Formatting','Done'];
   showProg(steps,0,10);
   if(!qs.length&&extractedText){
-    try{const raw=await callApi(`Extract all assignment questions from this text. Return ONLY a JSON array of strings. Text:\n\n${extractedText.substring(0,3000)}`,1500);
+    try{
+      const raw=await callApi(`Extract all assignment questions from this text. Return ONLY a JSON array of strings. Text:\n\n${extractedText.substring(0,3000)}`,1500);
       try{qs=JSON.parse(raw.replace(/```json|```/g,'').trim());}
       catch(e){qs=extractedText.split('\n').filter(l=>l.match(/Q\d|\d+\./i)&&l.length>15).slice(0,10).map(l=>l.replace(/^[Q\d\.\s]+/i,'').trim());}
     }catch(e){qs=['Describe the main topics covered in the provided document.'];}
   }
-  showProg(steps,1,30);generatedContent=[];
-  const styleMap={academic:'Write in formal academic style with technical terminology and structured paragraphs.',simple:'Write in clear, accessible language while maintaining academic quality.',detailed:'Write a comprehensive, detailed answer covering all aspects with examples.',points:'Write in organized point-wise format with examples and clear sub-headings.'};
+  showProg(steps,1,30);
+  generatedContent=[];
+  const styleMap={
+    academic:'Write in formal academic style with technical terminology and structured paragraphs.',
+    simple:'Write in clear, accessible language while maintaining academic quality.',
+    detailed:'Write a comprehensive, detailed answer covering all aspects with examples.',
+    points:'Write in organized point-wise format with examples and clear sub-headings.'
+  };
   for(let i=0;i<qs.length;i++){
-    const q=qs[i];showProg(steps,2,Math.round(30+((i+1)/qs.length)*60));
+    const q=qs[i];
+    showProg(steps,2,Math.round(30+((i+1)/qs.length)*60));
     const ctx=extractedText?`\n\nContext:\n${extractedText.substring(0,2000)}`:'';
     const prompt=`You are an expert academic writer for ${program||'BCA'} students at ${uni}.\n\nSubject: ${subject}\nQuestion ${i+1}: ${q}${ctx}\n\nWrite a complete answer (~${wordCount} words). ${styleMap[selectedStyle]}\nInclude introduction, main body with examples, conclusion. Do NOT repeat the question text.`;
-    try{let ans=await callApi(prompt,2000);let clean=sanitize(ans);clean=await ensureComplete(clean,prompt,parseInt(wordCount)||500);generatedContent.push({q:`Q.${i+1} ${q}`,a:clean});}
-    catch(e){generatedContent.push({q:`Q.${i+1} ${q}`,a:`[Error: ${e.message}]`});}
+    try{
+      let ans=await callApi(prompt,2000);
+      let clean=sanitize(ans);
+      clean=await ensureComplete(clean,prompt,parseInt(wordCount)||500);
+      generatedContent.push({q:`Q.${i+1} ${q}`,a:clean});
+    }catch(e){generatedContent.push({q:`Q.${i+1} ${q}`,a:`[Error: ${e.message}]`});}
   }
-  showProg(steps,4,100);await sleep(300);
+  showProg(steps,4,100);
+  await sleep(300);
   document.getElementById('progressArea').innerHTML='';
   renderDoc({uni,name,roll,program,sem,subject,session,setNum});
-  // Pre-generate PDF in background
-  buildPDF({uni,name,roll,program,sem,subject,session}).catch(()=>{});
-  markDone(2);markDone(3);goStep(3);
+  markDone(2);markDone(3);
+  goStep(3);
   btn.disabled=false;btn.innerHTML='<i class="ti ti-sparkles"></i> Generate Assignment';
-  document.getElementById('outputActions').style.display='block';showToast('Assignment ready!','success');
+  document.getElementById('outputActions').style.display='block';
+  showToast('Assignment ready!','success');
 }
+
 function showProg(steps,cur,pct){
-  document.getElementById('progressArea').innerHTML=`<div class="progress-card"><div class="prog-title"><i class="ti ti-loader spin"></i> Generating your assignment…</div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div><div class="prog-chips">${steps.map((s,i)=>`<span class="p-chip ${i<cur?'done':i===cur?'run':''}">${i<cur?'✓ ':''}${s}</span>`).join('')}</div></div>`;
+  document.getElementById('progressArea').innerHTML=`
+    <div class="progress-card">
+      <div class="prog-title"><i class="ti ti-loader spin"></i> Generating your assignment…</div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+      <div class="prog-chips">${steps.map((s,i)=>`<span class="p-chip ${i<cur?'done':i===cur?'run':''}">${i<cur?'✓ ':''}${s}</span>`).join('')}</div>
+    </div>`;
 }
+
 function renderDoc({uni,name,roll,program,sem,subject,session,setNum}){
   const area=document.getElementById('previewArea');
   const qBlocks=generatedContent.map((item,i)=>{
     const qText=escapeHtml(item.q.replace(/^Q\.\d+\s*/,''));
     const paras=(item.a||'').split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
-    const aHtml=paras.map(p=>{if(p.indexOf('%%H_START%%')!==-1){const inner=p.replace(/.*?%%H_START%%(.*?)%%H_END%%.*/,'$1').trim();return`<p><strong>${escapeHtml(inner)}</strong></p>`;}return`<p>${escapeHtml(p).replace(/\n/g,'<br>')}</p>`;}).join('');
-    return`<div class="qblock"><div class="qblock-num"><i class="ti ti-circle-dot"></i> Question ${i+1}</div><div class="qblock-q">${qText}</div><div class="qblock-a">${aHtml}</div></div>`;
+    const aHtml=paras.map(p=>{
+      if(p.indexOf('%%H_START%%')!==-1){const inner=p.replace(/.*?%%H_START%%(.*?)%%H_END%%.*/,'$1').trim();return `<p><strong>${escapeHtml(inner)}</strong></p>`;}
+      return `<p>${escapeHtml(p).replace(/\n/g,'<br>')}</p>`;
+    }).join('');
+    return `<div class="qblock"><div class="qblock-num"><i class="ti ti-circle-dot"></i> Question ${i+1}</div><div class="qblock-q">${qText}</div><div class="qblock-a">${aHtml}</div></div>`;
   }).join('');
-  area.innerHTML=`<div class="academic-doc" id="assignDoc"><div class="doc-banner"><div class="doc-uni">${escapeHtml(uni)}</div><div class="doc-sub">${escapeHtml(subject)} · Assignment · ${escapeHtml(setNum)}</div></div><div class="doc-body"><table class="info-tbl"><tr><td>Name</td><td>${escapeHtml(name)}</td></tr><tr><td>Roll</td><td>${escapeHtml(roll)}</td></tr><tr><td>Program</td><td>${escapeHtml(program)}</td></tr><tr><td>Semester</td><td>${escapeHtml(sem)}</td></tr><tr><td>Course</td><td>${escapeHtml(subject)}</td></tr><tr><td>Session</td><td>${escapeHtml(session)}</td></tr></table><div class="section-hd">Answers</div>${qBlocks}</div></div>`;
+  area.innerHTML=`<div class="academic-doc" id="assignDoc">
+    <div class="doc-banner">
+      <div class="doc-uni">${escapeHtml(uni)}</div>
+      <div class="doc-sub">${escapeHtml(subject)} · Assignment · ${escapeHtml(setNum)}</div>
+    </div>
+    <div class="doc-body">
+      <table class="info-tbl">
+        <tr><td>Name</td><td>${escapeHtml(name)}</td></tr>
+        <tr><td>Roll</td><td>${escapeHtml(roll)}</td></tr>
+        <tr><td>Program</td><td>${escapeHtml(program)}</td></tr>
+        <tr><td>Semester</td><td>${escapeHtml(sem)}</td></tr>
+        <tr><td>Course</td><td>${escapeHtml(subject)}</td></tr>
+        <tr><td>Session</td><td>${escapeHtml(session)}</td></tr>
+      </table>
+      <div class="section-hd">Answers</div>
+      ${qBlocks}
+    </div>
+  </div>`;
 }
+
 function sanitize(txt){
   if(!txt)return'';
   txt=txt.replace(/```[\s\S]*?```/g,'').replace(/<think>[\s\S]*?<\/think>/gi,'');
   txt=txt.replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1').replace(/__(.*?)__/g,'$1');
   txt=txt.replace(/^#{1,6}\s*(.*)$/gm,'%%H_START%%$1%%H_END%%');
   const kill=[/^assistant[:\-]/i,/^ai[:\-]/i,/^as an ai/i,/^as an assistant/i,/^\[.*\]$/i];
-  const lines=txt.split(/\r?\n/).map(l=>l.replace(/<[^>]*>/g,'')).filter(l=>{const t=l.trim();if(!t)return false;for(const p of kill)if(p.test(t))return false;return true;});
+  const lines=txt.split(/\r?\n/).map(l=>l.replace(/<[^>]*>/g,'')).filter(l=>{
+    const t=l.trim();if(!t)return false;
+    for(const p of kill)if(p.test(t))return false;return true;
+  });
   if(lines.length&&/^answer[:\-\s]/i.test(lines[0]))lines.shift();
   return lines.join('\n').replace(/\n{3,}/g,'\n\n').trim();
 }
+
 async function ensureComplete(ans,prompt,expected){
   let out=ans||'';const min=Math.max(80,Math.floor(expected*.6));let tries=0;
-  while(tries<2){if(out.split(/\s+/).filter(Boolean).length>=min&&!/\.\.\.$|\-\s*$|\:\s*$/.test(out.trim()))break;
-    try{const extra=await callApi(`Continue and finish:\n${out}\n\nContinue in same style.`,1000);const c=sanitize(extra);if(!c)break;out=out.trim()+'\n'+c.trim();}catch(e){break;}tries++;}return out;
+  while(tries<2){
+    if(out.split(/\s+/).filter(Boolean).length>=min&&!/\.\.\.$|\-\s*$|\:\s*$/.test(out.trim()))break;
+    try{const extra=await callApi(`Continue and finish:\n${out}\n\nContinue in same style.`,1000);const c=sanitize(extra);if(!c)break;out=out.trim()+'\n'+c.trim();}catch(e){break;}
+    tries++;
+  }return out;
 }
+
 async function callApi(prompt,maxTokens=1500){
-  const res=await fetch('https://api.sarvam.ai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','api-subscription-key':SARVAM_KEY},body:JSON.stringify({model:'sarvam-m',messages:[{role:'user',content:prompt}],max_tokens:maxTokens})});
+  const res=await fetch('https://api.sarvam.ai/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','api-subscription-key':SARVAM_KEY},
+    body:JSON.stringify({model:'sarvam-m',messages:[{role:'user',content:prompt}],max_tokens:maxTokens})
+  });
   if(!res.ok){const e=await res.text();throw new Error(`API ${res.status}: ${e}`);}
   const d=await res.json();return d.choices?.[0]?.message?.content||'';
 }
 
-// ==========================================
-// PDF BUILD — returns base64 string
-// ==========================================
-async function buildPDF(info){
-  const {PDFDocument,rgb,StandardFonts}=PDFLib;
-  const doc=await PDFDocument.create();
-  const font=await doc.embedFont(StandardFonts.TimesRoman);
-  const bold=await doc.embedFont(StandardFonts.TimesRomanBold);
-  const W=595,H=842,m=50,maxW=W-m*2;
-  function wrap(t,f,size,mw){const words=t.split(' ');const lines=[];let line='';for(const w of words){const tt=line?line+' '+w:w;if(f.widthOfTextAtSize(tt,size)>mw){if(line)lines.push(line);line=w;}else line=tt;}if(line)lines.push(line);return lines;}
-  let page=doc.addPage([W,H]);let y=H-m;
-  function chk(n=20){if(y<m+n){page=doc.addPage([W,H]);y=H-m;}}
-  function drawTxt(t,f,size,col=rgb(0,0,0),x=m){chk(size+4);page.drawText(t,{x,y,font:f,size,color:col});y-=size+5;}
-  function drawWrap(t,f,size,col=rgb(0,0,0),ind=0,lh=null){const h=lh||(size+6);for(const l of wrap(t,f,size,maxW-ind)){chk(h);page.drawText(l,{x:m+ind,y,font:f,size,color:col});y-=h;}}
-  const {uni='',name='',roll='',program='',sem='',subject='',session=''}=info||{};
-  const uw=bold.widthOfTextAtSize(uni,16);page.drawText(uni,{x:(W-uw)/2,y,font:bold,size:16,color:rgb(0,0,0)});y-=22;
-  const sw=bold.widthOfTextAtSize(subject+' — Assignment',13);page.drawText(subject+' — Assignment',{x:(W-sw)/2,y,font:bold,size:13,color:rgb(0,0,0)});y-=20;
-  const rows=[['NAME',name],['ROLL',roll],['PROGRAM',program],['SEMESTER',sem],['COURSE',subject],['SESSION',session]];
-  const tx=m,tw=maxW,mid=tx+Math.round(tw*.38),rh=20,top=y;
-  page.drawLine({start:{x:tx,y:top},end:{x:tx+tw,y:top},thickness:1,color:rgb(0,0,0)});
-  for(let r=0;r<rows.length;r++){
-    const cy=top-(r+1)*rh+6;
-    page.drawText(rows[r][0],{x:tx+8,y:cy,font:bold,size:10,color:rgb(0,0,0)});
-    page.drawText(rows[r][1]||'',{x:mid+8,y:cy,font:font,size:10,color:rgb(0,0,0)});
-    page.drawLine({start:{x:tx,y:top-(r+1)*rh},end:{x:tx+tw,y:top-(r+1)*rh},thickness:.5,color:rgb(.8,.8,.8)});
-    page.drawLine({start:{x:mid,y:top},end:{x:mid,y:top-rows.length*rh},thickness:.5,color:rgb(.8,.8,.8)});
-  }
-  y=top-rows.length*rh-30;
-  for(let i=0;i<generatedContent.length;i++){
-    const item=generatedContent[i];chk(40);
-    drawTxt(`Question ${i+1}`,bold,13);y-=2;
-    drawWrap(item.q.replace(/^Q\.\d+\s*/,''),font,11,rgb(0,0,0));y-=6;
-    for(const para of item.a.split('\n').filter(p=>p.trim())){
-      if(para.indexOf('%%H_START%%')!==-1){const inner=para.replace(/.*?%%H_START%%(.*?)%%H_END%%.*/,'$1').trim();if(inner){chk(20);drawTxt(inner,bold,12);}}
-      else{const c=para.replace(/\*\*/g,'').replace(/\*/g,'').trim();if(c)drawWrap(c,font,11,rgb(0,0,0),0,17);}
-      y-=2;
-    }y-=12;
-  }
-  const bytes=await doc.save();
-  // Chunk-safe base64 encoding
-  const uint8=new Uint8Array(bytes);
-  let binary='';
-  const chunk=8192;
-  for(let i=0;i<uint8.length;i+=chunk){
-    binary+=String.fromCharCode.apply(null,uint8.subarray(i,i+chunk));
-  }
-  pdfBase64=btoa(binary);
-  return pdfBase64;
-}
-
-// ==========================================
-// SAVE OPTIONS — Android-safe approach
-// ==========================================
-function showSaveOptions(){
-  document.getElementById('saveModal').classList.remove('hidden');
-}
-function closeSaveModal(e){
-  if(!e||e.target===document.getElementById('saveModal'))
-    document.getElementById('saveModal').classList.add('hidden');
-}
-
-// Option 1: Open PDF as data: URL in new tab — browser can then share/save
-async function openPdfInBrowser(){
-  closeSaveModal();
-  if(!generatedContent.length){showToast('Generate first!','error');return;}
-  showToast('Building PDF…','success');
+async function downloadPDF(){
+  if(!generatedContent.length)return showToast('Generate first!','error');
+  const btn=document.getElementById('dlBtn');
+  btn.disabled=true;btn.innerHTML='<i class="ti ti-loader spin"></i>';
   try{
-    const name=v('studentName')||'student';
-    if(!pdfBase64){
-      await buildPDF({uni:v('uniName'),name,roll:v('rollNum'),program:v('program'),sem:v('semester'),subject:v('subject'),session:v('session')});
+    const {PDFDocument,rgb,StandardFonts}=PDFLib;
+    const doc=await PDFDocument.create();
+    const font=await doc.embedFont(StandardFonts.TimesRoman);
+    const bold=await doc.embedFont(StandardFonts.TimesRomanBold);
+    const W=595,H=842,m=50,maxW=W-m*2;
+    function wrap(t,f,size,mw){const words=t.split(' ');const lines=[];let line='';for(const w of words){const tt=line?line+' '+w:w;if(f.widthOfTextAtSize(tt,size)>mw){if(line)lines.push(line);line=w;}else line=tt;}if(line)lines.push(line);return lines;}
+    let page=doc.addPage([W,H]);let y=H-m;
+    function chk(n=20){if(y<m+n){page=doc.addPage([W,H]);y=H-m;}}
+    function drawTxt(t,f,size,col=rgb(0,0,0),x=m){chk(size+4);page.drawText(t,{x,y,font:f,size,color:col});y-=size+5;}
+    function drawWrap(t,f,size,col=rgb(0,0,0),ind=0,lh=null){const h=lh||(size+6);for(const l of wrap(t,f,size,maxW-ind)){chk(h);page.drawText(l,{x:m+ind,y,font:f,size,color:col});y-=h;}}
+    const uni=v('uniName'),name=v('studentName'),roll=v('rollNum'),program=v('program'),
+          sem=v('semester'),subject=v('subject'),session=v('session');
+    const uw=bold.widthOfTextAtSize(uni,16);
+    page.drawText(uni,{x:(W-uw)/2,y,font:bold,size:16,color:rgb(0,0,0)});y-=22;
+    const sw=bold.widthOfTextAtSize(subject+' — Assignment',13);
+    page.drawText(subject+' — Assignment',{x:(W-sw)/2,y,font:bold,size:13,color:rgb(0,0,0)});y-=20;
+    const rows=[['NAME',name],['ROLL',roll],['PROGRAM',program],['SEMESTER',sem],['COURSE',subject],['SESSION',session]];
+    const tx=m,tw=maxW,mid=tx+Math.round(tw*.38),rh=20,top=y;
+    page.drawLine({start:{x:tx,y:top},end:{x:tx+tw,y:top},thickness:1,color:rgb(0,0,0)});
+    for(let r=0;r<rows.length;r++){
+      const cy=top-(r+1)*rh+6;
+      page.drawText(rows[r][0],{x:tx+8,y:cy,font:bold,size:10,color:rgb(0,0,0)});
+      page.drawText(rows[r][1]||'',{x:mid+8,y:cy,font:font,size:10,color:rgb(0,0,0)});
+      page.drawLine({start:{x:tx,y:top-(r+1)*rh},end:{x:tx+tw,y:top-(r+1)*rh},thickness:.5,color:rgb(.8,.8,.8)});
+      page.drawLine({start:{x:mid,y:top},end:{x:mid,y:top-rows.length*rh},thickness:.5,color:rgb(.8,.8,.8)});
     }
-    // Open in new window — Android Chrome/browser can save from here
-    const win=window.open();
-    if(win){
-      win.document.write(`<!DOCTYPE html><html><head><title>Assignment PDF</title></head><body style="margin:0;background:#525659"><embed width="100%" height="100%" src="data:application/pdf;base64,${pdfBase64}" type="application/pdf"></embed></body></html>`);
-      win.document.close();
-      showToast('PDF opened! Use browser menu to save.','success');
-    } else {
-      // Fallback if popup blocked — use iframe trick
-      showPdfFallback();
+    y=top-rows.length*rh-30;
+    for(let i=0;i<generatedContent.length;i++){
+      const item=generatedContent[i];chk(40);
+      drawTxt(`Question ${i+1}`,bold,13);y-=2;
+      drawWrap(item.q.replace(/^Q\.\d+\s*/,''),font,11,rgb(0,0,0));y-=6;
+      for(const para of item.a.split('\n').filter(p=>p.trim())){
+        if(para.indexOf('%%H_START%%')!==-1){const inner=para.replace(/.*?%%H_START%%(.*?)%%H_END%%.*/,'$1').trim();if(inner){chk(20);drawTxt(inner,bold,12);}}
+        else{const c=para.replace(/\*\*/g,'').replace(/\*/g,'').trim();if(c)drawWrap(c,font,11,rgb(0,0,0),0,17);}
+        y-=2;
+      }y-=12;
     }
-  }catch(e){showToast('Error: '+e.message,'error');console.error(e);}
+    const bytes=await doc.save();
+    const blob=new Blob([bytes],{type:'application/pdf'});
+
+    // Try direct download first (works in normal browsers)
+    const tryDirectDownload = () => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Assignment_${name.replace(/\s+/g,'_')}.pdf`;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('PDF download started','success');
+    };
+
+    // Upload to a temporary HTTPS host (transfer.sh) when running inside WebView
+    async function uploadToTransfer(blob, filename){
+      const uploadUrl = 'https://transfer.sh/' + encodeURIComponent(filename);
+      const resp = await fetch(uploadUrl, {method: 'PUT', body: blob});
+      if(!resp.ok) throw new Error('Upload failed: ' + resp.status);
+      const text = await resp.text();
+      return text.trim();
+    }
+
+    // Convert Blob to base64 (for native bridge in WebView apps like Kodular)
+    function blobToBase64(blob){
+      return new Promise((res, rej)=>{
+        const fr = new FileReader();
+        fr.onload = ()=>{
+          const dataUrl = fr.result || '';
+          // data:[<mediatype>][;base64],<data>
+          const idx = dataUrl.indexOf(',');
+          res(idx>=0?dataUrl.slice(idx+1):dataUrl);
+        };
+        fr.onerror = ()=>rej(new Error('FileReader error'));
+        fr.readAsDataURL(blob);
+      });
+    }
+
+    const ua = navigator.userAgent || '';
+    const isLikelyWebView = (/wv|Android.*WebView|Version\/.*Chrome\/.*Mobile/i.test(ua)) || !!window.ReactNativeWebView || !!window.Android;
+
+    try{
+      if(isLikelyWebView){
+        const filename = `Assignment_${name.replace(/\s+/g,'_')}.pdf`;
+        // Preferred: call native Android bridge if the app exposes a save method (Kodular or custom WebView)
+        try{
+          if(window.Android && typeof window.Android.saveBase64 === 'function'){
+            const b64 = await blobToBase64(blob);
+            // saveBase64 should be implemented in the app to accept (filename, base64data)
+            window.Android.saveBase64(filename, b64);
+            showToast('Sent file to app for saving','success');
+          } else if(window.Android && typeof window.Android.saveBase64 === 'object' && window.Android.saveBase64.call){
+            // Some bridges expose methods differently; try calling anyway
+            const b64 = await blobToBase64(blob);
+            window.Android.saveBase64(filename, b64);
+            showToast('Sent file to app for saving','success');
+          } else if(window.ReactNativeWebView && window.ReactNativeWebView.postMessage){
+            // For React Native WebView, send base64 payload via postMessage
+            const b64 = await blobToBase64(blob);
+            window.ReactNativeWebView.postMessage(JSON.stringify({action:'saveBase64',filename,base64:b64}));
+            showToast('Sent file to native bridge','success');
+          } else if(window.AppInventor && typeof window.AppInventor.setWebViewString === 'function'){
+            // Kodular / App Inventor bridge: send JSON via WebViewString
+            const b64 = await blobToBase64(blob);
+            try{
+              window.AppInventor.setWebViewString(JSON.stringify({action:'saveBase64',filename,base64:b64}));
+              showToast('Sent file to app via WebViewString','success');
+            }catch(e){
+              // ignore and fallback
+            }
+          } else {
+            // Fallback: upload and open HTTPS link so native downloader can handle it
+            const publicUrl = await uploadToTransfer(blob, filename);
+            if(publicUrl && publicUrl.startsWith('http')){
+              window.open(publicUrl, '_blank');
+              showToast('Opened secure download link','success');
+            } else {
+              tryDirectDownload();
+            }
+          }
+        }catch(e){
+          // if anything fails, fallback to upload or direct download
+          try{
+            const publicUrl = await uploadToTransfer(blob, filename);
+            if(publicUrl && publicUrl.startsWith('http')){ window.open(publicUrl, '_blank'); showToast('Opened secure download link','success'); }
+            else tryDirectDownload();
+          }catch(err){ tryDirectDownload(); console.error('WebView save fallback error',err); }
+        }
+      } else {
+        tryDirectDownload();
+      }
+    }catch(e){
+      // final fallback: direct blob download
+      tryDirectDownload();
+      console.error('PDF download/upload error:', e);
+      showToast('PDF download fallback: '+e.message,'error');
+    }
+  }catch(e){showToast('PDF error: '+e.message,'error');console.error(e);}
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-file-download"></i> PDF';
 }
 
-// Option 2: Print (works everywhere including WebView with print support)
-async function printPage(){
-  closeSaveModal();
-  if(!generatedContent.length){showToast('Generate first!','error');return;}
-  // Build a clean print-friendly page
-  const name=v('studentName')||'student';
-  const uni=v('uniName'),roll=v('rollNum'),program=v('program'),sem=v('semester'),subject=v('subject'),session=v('session'),setNum=document.getElementById('setNum').value;
-  let html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Assignment</title><style>
-    body{font-family:Times New Roman,serif;margin:40px;color:#000;font-size:12pt}
-    h1{text-align:center;font-size:16pt;margin-bottom:4px}
-    h2{text-align:center;font-size:13pt;font-weight:normal;margin-bottom:20px}
-    table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:11pt}
-    table td{padding:6px 8px;border:1px solid #000}
-    table td:first-child{font-weight:bold;width:30%;background:#f0f0f0}
-    .qnum{font-size:10pt;font-weight:bold;text-transform:uppercase;color:#0000cc;margin-bottom:4px}
-    .qq{font-style:italic;margin-bottom:10px;padding:6px 10px;border-left:3px solid #0000cc;background:#f8f8f8}
-    .qa p{margin-bottom:8px;line-height:1.7}
-    .qblock{margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid #ccc}
-    @media print{body{margin:20px}.qblock{page-break-inside:avoid}}
-  </style></head><body>
-  <h1>${escapeHtmlP(uni)}</h1>
-  <h2>${escapeHtmlP(subject)} — Assignment — ${escapeHtmlP(setNum)}</h2>
-  <table><tr><td>Name</td><td>${escapeHtmlP(name)}</td></tr><tr><td>Roll</td><td>${escapeHtmlP(roll)}</td></tr><tr><td>Program</td><td>${escapeHtmlP(program)}</td></tr><tr><td>Semester</td><td>${escapeHtmlP(sem)}</td></tr><tr><td>Session</td><td>${escapeHtmlP(session)}</td></tr></table>
-  <hr><h3 style="text-align:center;letter-spacing:2px;font-size:10pt;color:#555">ANSWERS</h3><hr><br>`;
-  generatedContent.forEach((item,i)=>{
-    const qText=item.q.replace(/^Q\.\d+\s*/,'');
-    const paras=item.a.split('\n').filter(p=>p.trim());
-    const aHtml=paras.map(p=>{
-      if(p.indexOf('%%H_START%%')!==-1){const inner=p.replace(/.*?%%H_START%%(.*?)%%H_END%%.*/,'$1').trim();return`<p><strong>${escapeHtmlP(inner)}</strong></p>`;}
-      return`<p>${escapeHtmlP(p)}</p>`;
-    }).join('');
-    html+=`<div class="qblock"><div class="qnum">Question ${i+1}</div><div class="qq">${escapeHtmlP(qText)}</div><div class="qa">${aHtml}</div></div>`;
-  });
-  html+=`</body></html>`;
-  const pw=window.open('','_blank');
-  if(pw){pw.document.write(html);pw.document.close();setTimeout(()=>pw.print(),500);}
-  else{showToast('Popup blocked. Try "Copy Text" instead.','error');}
-}
-
-// Fallback: show PDF in iframe inside same page
-function showPdfFallback(){
-  if(!pdfBase64)return;
-  const d=document.createElement('div');
-  d.style='position:fixed;inset:0;z-index:9997;background:#525659;display:flex;flex-direction:column';
-  d.innerHTML=`<div style="padding:10px 16px;background:#323639;display:flex;justify-content:space-between;align-items:center"><span style="color:#fff;font-weight:600">PDF Preview</span><button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer">✕</button></div><embed style="flex:1;width:100%" src="data:application/pdf;base64,${pdfBase64}" type="application/pdf">`;
-  document.body.appendChild(d);
-}
-
-// Option 3: Copy all text
-function copyAllText(){
-  closeSaveModal();
+function copyText(){
   if(!generatedContent.length)return;
   navigator.clipboard.writeText(generatedContent.map(item=>`${item.q}\n\n${item.a}`).join('\n\n---\n\n'))
-    .then(()=>showToast('All text copied!','success'))
-    .catch(()=>{
-      // Fallback for WebView clipboard
-      const ta=document.createElement('textarea');
-      ta.value=generatedContent.map(item=>`${item.q}\n\n${item.a}`).join('\n\n---\n\n');
-      document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
-      showToast('All text copied!','success');
-    });
+    .then(()=>showToast('Copied!','success'));
 }
 
-function copyText(){copyAllText();}
-
-function escapeHtml(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-function escapeHtmlP(s){return escapeHtml(s||'');}
 function showToast(msg,type='success'){
   const t=document.getElementById('toast');
   t.querySelector('i').className=type==='success'?'ti ti-check':'ti ti-alert-circle';
@@ -581,7 +896,10 @@ function showToast(msg,type='success'){
   t.className=`toast ${type} show`;
   setTimeout(()=>t.classList.remove('show'),2800);
 }
+
+function escapeHtml(str){if(!str)return'';return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
 renderQuestions();
 </script>
 </body>
